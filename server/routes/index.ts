@@ -51,7 +51,7 @@ export class Route {
                   if(type) {
                     router[type](route, controllerInstance[method].bind(controllerInstance));
                   } else {
-                    console.warn(`Unknown HTTP method for ${method} in ${base_route}`);
+                    // console.warn(`Unknown HTTP method for ${method} in ${base_route}`);
                   }
                 });  
             }

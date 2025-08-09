@@ -1,10 +1,11 @@
 import { sendResponse } from "../utils/response"
 import { Response } from "express"
-import { SPOTIFY_API_BASE_URL } from "../constants/constants";
+import { SPOTIFY_API_BASE_URL, SPOTIFY_AUTH_BASE_URL } from "../constants/constants";
 
 export class BaseController {
   
   protected SPOTIFY_API = SPOTIFY_API_BASE_URL;
+  protected SPOTIFY_AUTH = SPOTIFY_AUTH_BASE_URL;
   
   /**
    * Menghasilkan respons API standar.
