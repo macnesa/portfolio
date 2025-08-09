@@ -1,11 +1,13 @@
 import { sendResponse } from "../utils/response"
-import { Response } from "express"
-import { SPOTIFY_API_BASE_URL, SPOTIFY_AUTH_BASE_URL } from "../constants/constants";
-
+import { Response, NextFunction } from "express"
+import { SPOTIFY_API_BASE_URL, SPOTIFY_AUTH_BASE_URL } from "../constants/url";
+import { ErrorByNumber } from "../constants/errorByNumber";
+import AppError from "../utils/AppError";
 export class BaseController {
   
   protected SPOTIFY_API = SPOTIFY_API_BASE_URL;
   protected SPOTIFY_AUTH = SPOTIFY_AUTH_BASE_URL;
+  protected AppError = AppError;
   
   /**
    * Menghasilkan respons API standar.
@@ -16,15 +18,38 @@ export class BaseController {
    * @param {any} data - Data yang dikembalikan.
    * @param {string} [error] - Pesan error jika ada.
    */
-  protected response<T = unknown, E = unknown>(
+  
+  protected response<T = unknown>(
     res: Response,
     success: boolean,
     status: number,
     message: string,
-    data: T = null as T,
-    error: E = null as E
+    data: T | null = null
   ): void {
-    sendResponse<T, E>(res, success, status, message, data, error);
+    sendResponse(res, success, status, message, data);
   }
-
+  
+  protected sendSuccess<T = unknown>(
+    res: Response,
+    data: T | null = null,
+    statusCode: number = 200,
+  ): void {
+    const messageMap: Record<number, string> = {
+      200: 'Success',
+      201: 'Created',
+      202: 'Accepted',
+    };
+    const message = messageMap[statusCode] ?? 'Success';
+    this.response(res, true, statusCode, message, data);
+  }
+  
+  protected error(
+    next: NextFunction,
+    statusCode: number,
+    message?: string
+  ): void {
+    const errorDetail = ErrorByNumber[statusCode] ?? ErrorByNumber[500];
+    const finalMessage = message && message.trim().length > 0 ? message : errorDetail.message;
+    next(new AppError(errorDetail.status, finalMessage));
+  }
 }

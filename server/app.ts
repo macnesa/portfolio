@@ -6,7 +6,8 @@ if (process.env.NODE_ENV !== 'production') {
 import express, { Application } from 'express'
 import cors from 'cors'
 import cookieParser from "cookie-parser";
-import { Route } from './routes/index'
+import errorHandler from './middlewares/errorHandler';
+import { Route } from './routes/Route'
 
 const app: Application = express()
 const port: number = Number(process.env.PORT) || 3000
@@ -20,6 +21,7 @@ app.use(cookieParser());
 
 // Routes
 app.use(Route.createRoutes());
+app.use(errorHandler);
 
 // Start server
 app.listen(port, () => {

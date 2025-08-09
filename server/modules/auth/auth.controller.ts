@@ -79,8 +79,6 @@ export default class authController extends BaseController {
   }
   
   getLogin(req: Request, res: Response) {
-    console.log("vetaher");
-
     const state = this.generateState();
     res.cookie("oauthState", state, {
       httpOnly: true,
@@ -103,63 +101,87 @@ export default class authController extends BaseController {
   }
   
   async getRedirect(req: Request, res: Response, next: NextFunction): Promise<any> {
-    try {
-      // const parsed = redirectSchema.safeParse(req.query);
-      // const { code, state } = req.query;
-      // const savedState = req.cookies.oauthState;
-      const code = String(req.query.code || '') ;
-      const token = await this.secondCall(code);
-      const { access_token, refresh_token, expires_in } = token;
-      
-      this.setAuthCookies(res, access_token, refresh_token, Number(expires_in));
-      res.clearCookie("oauthState");
-      
-      
-      // const xx = await token.json()
-      // console.log(token);
-      
-      
-      // if (!parsed.success) {
-      //   this.response(res, false, 400, 'Failed', null, z.treeifyError(parsed.error))
-      //   return;
-      // }
-      // const { code } = parsed.data;
-      // const data = token.data.access_token;
-      // res.redirect(`${this.clientUrl}/?token=${data}`);
-      
-    } catch (error) {
-      next(error);
+    const code = String(req.query.code || "");
+    const state = String(req.query.state || "");
+    const savedState = req.cookies.oauthState;
+  
+    if (!code || !state || state !== savedState) {
+      return this.error(next, 400, "Invalid state or code");
     }
+  
+    const token = await this.secondCall(code);
+    const { access_token, refresh_token, expires_in } = token.data;
+  
+    this.setAuthCookies(res, access_token, refresh_token, Number(expires_in));
+    res.clearCookie("oauthState");
+  
+    res.redirect(this.clientUrl);
   }
   
   async secondCall(code: string): Promise<any> {
-    try {
-      const body = new URLSearchParams({
-        code,
-        redirect_uri: `${this.redirectUrl}`,
-        grant_type: "authorization_code",
-      });
-      const req: AxiosResponse<any> = await axios.post(
-        `${this.SPOTIFY_AUTH}/api/token`,
-        body.toString(),
-        {
-          headers: {
-            Authorization: this.spotifyBuffer,
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        }
-      )
-      return req;
-    } catch (error) {
-      throw error;
-    }
+    const body = new URLSearchParams({
+      code,
+      redirect_uri: this.redirectUrl,
+      grant_type: "authorization_code",
+    });
+    const req = await axios.post(
+      `${this.SPOTIFY_AUTH}/api/token`,
+      body.toString(),
+      {
+        headers: {
+          Authorization: this.spotifyBuffer,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      }
+    );
+    return req;
   }
+  
+  async getRefresh(req: Request, res: Response, next: NextFunction) {
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) {
+      return this.error(next, 401, 'Refresh token missing, please login again');
+    }
+  
+    const body = new URLSearchParams({
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken,
+    });
+    const fetch = await axios.post(
+      `${this.SPOTIFY_AUTH}/api/token`,
+      body.toString(),
+      {
+        headers: {
+          Authorization: this.spotifyBuffer,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      }
+    );
+  
+    if (fetch.data.error) {
+      // res.clearCookie("accessToken");
+      // res.clearCookie("accessTokenExpiry");
+      // res.clearCookie("refreshToken");
+      return this.error(next, 401, 'Refresh token invalid or expired, please login again');
+    }
+  
+    const { access_token, expires_in, refresh_token } = fetch.data;
+    this.setAuthCookies(res, access_token, refresh_token || refreshToken, Number(expires_in));
+  
+    const redirectTo = req.query.redirect_to as string;
+    if (redirectTo) {
+      return res.redirect(`${this.clientUrl}${redirectTo}`);
+    }
+    this.sendSuccess(res, { desc: 'Refresh Token Request has been succesfully executed' })
+  };
+  
+  
   
   async status(req: Request, res: Response) {
     const accessToken = req.cookies.accessToken;
     const accessExpiry = Number(req.cookies.accessTokenExpiry);
     const hasAccess = typeof accessToken === "string" && accessToken.trim() !== "" && !Number.isNaN(accessExpiry) && Date.now() < accessExpiry;
-    this.response(res, true, 200, 'Success', { loggedIn: hasAccess })
+    this.sendSuccess(res, { loggedIn: hasAccess });
   }
   
 }
