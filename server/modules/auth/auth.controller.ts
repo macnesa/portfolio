@@ -2,8 +2,8 @@ import axios, { AxiosResponse } from 'axios';
 import { Request, Response, NextFunction } from 'express';
 import { BaseController } from '../../core/base.controller'
 import { redirectSchema } from '../../schemas/zod.schema';
+import { NoAuth } from '../../decorators/NoAuth';
 import crypto from "crypto";
-
 import { z } from 'zod'
 
 export default class authController extends BaseController {
@@ -23,8 +23,8 @@ export default class authController extends BaseController {
   }
   
   private get clientUrl(): string {
-    if (!process.env.CLIENT_REDIRECT_URL) throw new Error("Missing CLIENT_REDIRECT_URL in env");
-    return process.env.CLIENT_REDIRECT_URL;
+    if (!process.env.CLIENT_URL) throw new Error("Missing CLIENT_URL in env");
+    return process.env.CLIENT_URL;
   }
   
   private get redirectUrl(): string {
@@ -41,8 +41,8 @@ export default class authController extends BaseController {
     super();
   }
   
-  async index(req: Request, res: Response, next:NextFunction) {
-    this.response(res, true, 200, 'Success', { desc: "This is Auth route" })
+  async index(req: Request,  res: Response, next:NextFunction) {
+    this.sendSuccess(res, { desc: "This is the Auth route" });
   }
   
   generateState(length = 16) {
@@ -78,6 +78,7 @@ export default class authController extends BaseController {
     }
   }
   
+  @NoAuth()
   getLogin(req: Request, res: Response) {
     const state = this.generateState();
     res.cookie("oauthState", state, {
@@ -100,6 +101,7 @@ export default class authController extends BaseController {
     res.redirect(`${this.SPOTIFY_AUTH}/authorize?${params.toString()}`)
   }
   
+  @NoAuth()
   async getRedirect(req: Request, res: Response, next: NextFunction): Promise<any> {
     const code = String(req.query.code || "");
     const state = String(req.query.state || "");
@@ -111,6 +113,9 @@ export default class authController extends BaseController {
   
     const token = await this.secondCall(code);
     const { access_token, refresh_token, expires_in } = token.data;
+    
+    console.log("vatuh", token.data);
+    
   
     this.setAuthCookies(res, access_token, refresh_token, Number(expires_in));
     res.clearCookie("oauthState");
@@ -174,8 +179,6 @@ export default class authController extends BaseController {
     }
     this.sendSuccess(res, { desc: 'Refresh Token Request has been succesfully executed' })
   };
-  
-  
   
   async status(req: Request, res: Response) {
     const accessToken = req.cookies.accessToken;

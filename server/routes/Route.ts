@@ -6,7 +6,7 @@ import { Di } from '../core/di'
 import { Request, Response, NextFunction } from 'express';
 import { sendResponse } from "../utils/response"
 import { catchAsync } from '../utils/catchAsync';
-
+import { authHandler } from '../middlewares/authHandler';
 export class Route {
   
   private static readonly modulesPath: string = path.join(__dirname, '../modules');
@@ -51,7 +51,9 @@ export class Route {
                   )
                 );
                 if(type) {
-                  router[type](route, catchAsync(controllerInstance[method].bind(controllerInstance)));
+                  const requireToken: boolean = Reflect.getMetadata('requireToken', controllerInstance, method) ?? true;
+                  
+                  router[type](route, authHandler(requireToken), catchAsync(controllerInstance[method].bind(controllerInstance)));
                 } else {
                   // console.warn(`Unknown HTTP method for ${method} in ${base_route}`);
                 }

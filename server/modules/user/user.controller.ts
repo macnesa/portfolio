@@ -9,7 +9,7 @@ export default class userController extends BaseController {
   }
   
   async index(req: Request, res: Response, next:NextFunction) {
-    this.response(res, true, 200, 'Success', { desc: "This is User route" })
+    this.sendSuccess(res, { desc: "This is the User route" });
   }
   
   // async getUser(req: Request, res: Response): Promise<any> {
