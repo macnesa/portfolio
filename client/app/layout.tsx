@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import RouteGuard from "../containers/RouteGuard";
-
+import Sidebar from "@/components/organisms/Sidebar";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,10 +23,18 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>
-        <RouteGuard>
-          {children}
-        </RouteGuard>
+      <body className="bg-dar">
+        <Sidebar/>
+        <div className="ml-60 py-5 px-5">
+          <RouteGuard>
+            {children}
+          </RouteGuard>
+        </div>
+        
+        
+        
+        <Script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js" />
+        <Script noModule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js" />
       </body>
     </html>
   );
