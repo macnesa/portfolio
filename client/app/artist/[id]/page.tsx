@@ -1,79 +1,152 @@
 "use client";
 
-import { useTracksStore } from '@/store/useTracksStore';
+import { useArtistStore, useArtistTopTracksStore, useArtistAlbumsStore } from '@/store/spotify/artistStore';
 import { notFound } from 'next/navigation';
-import { useEffect, use } from "react";
+import { useMemo, useEffect, use } from "react";
+import isEmpty from 'lodash/isEmpty'
+import filter from 'lodash/filter'
 
-
-interface ArtistPageProps {
-  params: { id: string };
-}
 export default function ArtistPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   if (!id) return notFound();
   
-  const { data, fetch, loading } = useTracksStore();
-
-  useEffect(() => {
-    if (!data) fetch();
-  }, [data, fetch]);
+  const { data: artist, fetch: fetchA, loading: loadingA, setId: setIdA } = useArtistStore();
   
-  if (!data?.items?.length) return <></>;
-
-  const items = data.items;
-  const topThree = items.slice(0, 3).map(item => item.name).join(", ");
-  const formatTime = (ms: number) => {
-    const minutes = Math.floor(ms / 60000);
-    const seconds = Math.floor((ms % 60000) / 1000).toString().padStart(2, "0");
-    return `${minutes}:${seconds}`;
-  };
-
-
+  const { data: topTracks, fetch: fetchB, loading: loadingB, setId: setIdB } = useArtistTopTracksStore();
+  
+  const { data: albums, fetch: fetchC, loading: loadingC, setId: setIdC } = useArtistAlbumsStore();
+ 
+  useEffect(() => {
+    setIdA(id);
+    if (!artist) fetchA();
+  }, [id, artist, fetchA]);
+  
+  useEffect(() => {
+    setIdB(id);
+    if (!topTracks) fetchB();
+  }, [id, topTracks, fetchB]);
+  
+  useEffect(() => {
+    setIdC(id);
+    if (!albums) fetchC();
+  }, [id, albums, fetchC]);
+  
+  console.log(albums);
+  
+  const typeAlbum = useMemo(() => { 
+    if (isEmpty(albums)) return null;
+    const items = filter(albums?.items, { album_type: 'album' }); 
+    return {
+      ...albums,
+      items
+    }
+  }, [albums]);
+  
+  const typeSingle = useMemo(() => { 
+    if (isEmpty(albums)) return null;
+    const items = filter(albums?.items, { album_type: 'single' }); 
+    return {
+      ...albums,
+      items
+    }
+  }, [albums]);
+  
+  if(isEmpty(artist) || isEmpty(topTracks) ) return <></>
+  
+  
+  // const typeSingle = useMemo(() => { 
+  //   return filter(albums?.items, { album_type: 'single' }); 
+  // }, [albums]);
+   
   return (
-    <section v-if="false" style={{background: "#2f2e60"}} className="mt-10 h-auto rounded-2xl w-full box-border overflow-hidden shadow-xl border-[2px] border-[rgba(173,167,181,0.2)] grid">
-      <section className="h-auto p-10 min-h-[26rem] w-full box-border overflow-hidden shadow-xl border-red-200 grid lg:grid-flow-col lg:grid-cols-[max-content_1fr]">
-        <div className="grid items-center self-end">
+    <>
+    {/* v-if="false" style={{background: "#2f2e60"}} border-[2px] border-[rgba(173,167,181,0.2)] */}
+    <section className=" h-auto w-full box-border overflow-hidden shadow-xl  grid">
+      <section style={{ backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url(${artist.images[0].url})` }} className="h-auto p-8 min-h-[34rem] w-full box-border overflow-hidden shadow-xl border-red-200 grid lg:grid-flow-col lg:grid-cols-[max-content_1fr] bg-center bg-no-repeat bg-cover">
+        {/* <div className="grid items-center self-end">
           <div style={{boxShadow: "-1px -1px 30px -9px rgba(0,0,0,1)"}} className="w-[20rem] h-[20rem] border-l-blue-200 grid grid-flow-col grid-cols-[1fr_1fr] grid-rows-[1fr_1fr]">
-            {items.slice(0, 4).map((track, idx) => (<img key={idx} src={track.album.images[1].url} className="w-[100%] h-[100%]" alt="" />))}
+            
           </div>
-        </div>
+        </div> */}
         <div className="border-l-fuchsia-600 flex flex-col justify-end lg:px-4">
-          <p className="text-base font-semibold text-white">THIS IS YOUR</p>
-          <p className="text-4xl lg:text-8xl mb-4 font-sans font-bold text-white">MOST LISTENED</p>
-          <p style={{color: "rgba(255, 255, 255, 0.666)"}} className="text-sm mb-2 font-sans font-normal">Featured {topThree}, and more</p>
-          <div className="text-sm font-semibold text-white flex items-center">
-            <img className="w-6 h-6 mr-2" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/1024px-Spotify_logo_without_text.svg.png"/>
-            <span>Spotify</span>
-            {/* @ts-ignore */}
-            <ion-icon className="w-1 h-1 mx-1" name="ellipse" />
-            <span className="font-normal">{items.length} Songs</span>
-            <p style={{background: "rgba(255, 255, 255, 0.666)", color: "black"}} className="text-[0.6rem] border-white px-1 py-[1px] font-semibold ml-2 font-sans rounded-sm">PREVIEW</p>
-          </div>
+          <p className="sm:text-4xl md:text-6xl lg:text-8xl mb-4 font-extrabold text-white">{artist.name}</p>
         </div>
       </section>
-      <div style={{background: "linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(14,13,13,1) 33%, rgba(31,30,30,0.9) 70%, rgba(35,34,34,0.8) 85%, rgba(41,41,41,0.4) 100%)"}} className="relative overflow-x-auto px-4 pt-4 pb-4">
-        <table className="w-full text-sm text-left border-white text-unfocus-500">
-          <thead className="border-b border-[rgba(222,222,222,0.1)] text-gray-400"></thead>
-          <tbody>
-            {items.map((each, idx) => (
-              <tr key={each.id || idx} onDoubleClick={() => {/* panggil playMusic(each) */}} className={`${each.preview_url ? "" : "teer"} border-none cursor-pointer text-gray-400 dark:focus:bg-gray-800 font-sans rounded-xl hover:bg-[rgba(222,222,222,0.1)] hover:text-white`}>
-                <th style={{borderTopLeftRadius: "10px", borderBottomLeftRadius: "10px"}} className="px-3 py-3 text-end font-normal border-white whitespace-nowrap">{idx + 1}</th>
-                <td className="pr-6 py-2 flex border-white">
-                  <img src={each.album.images[1].url} width={40} height={40} className="rounded-sm" alt="" />
-                  <div className="ml-2 p-0 flex flex-col justify-center">
-                    <p className="font-normal font-sans text-sm flex text-white">{each.name}</p>
-                    <a className="hover:underline hover:cursor-pointer font-normal font-sans text-xs">
-                      {each.artists.map((o, i) => o.name + (i + 1 !== each.artists.length ? ", " : ""))}
-                    </a>
-                  </div>
-                </td>
-                <td className="px-6 py-2 text-sm font-normal font-sans">{each.album.name}</td>
-                <td style={{borderTopRightRadius: "10px", borderBottomRightRadius: "10px"}} className="px-6 py-2 text-sm font-normal border-white">{formatTime(each.duration_ms)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      
+      <section className='mt-5'>
+        <p className="text-xl px-5 font-semibold text-white">Top Songs</p>
+        
+        <div className=" w-full box-border overflow-hidden mt-2 pb-2 shadow-xl  border-yellow-300  grid items-center grid-flow-cols  grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        {topTracks.tracks.map((each, index) => (
+          // onDoubleClick={() => playMusic(each.track)} ${isPreviewAvailable(each.track)}
+          <button key={index} className={` teer border-[rgba(222,222,222,0.1)] border-t hover:bg-[rgba(222,222,222,0.1)] hover:text-white text-unfocus-500  mx-2 focus:bg-[rgba(222,222,222,0.3)] cursor-pointer`}>
+            <div className="px-3 py-2 flex border-white">
+              <img src={each.album.images[1]?.url} className="rounded-sm" width={40} height={40} alt="" />
+              <div className="ml-4 p-0 flex flex-col text-start border-white justify-center truncate">
+                <p className="text-sm flex text-white border-red-300"> {each.name} </p>
+                <p className="text-[rgba(255,255,255,0.5)] text-xs border-red-300"> {each.album.name} -  { new Date(each.album.release_date).getFullYear()} </p>
+              </div>
+            </div>
+          </button>
+        ))}
+        </div>
+        
+      </section>
+      
+      {!isEmpty(typeAlbum) && (
+      <section className='mt-5'>
+        <p className="text-xl px-5 font-semibold text-white">Albums</p>
+        
+        <section className="mt-2 border-green-400 grid md:grid-cols-[1fr_1fr] lg:grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr] gap-4 h overflow-hidden">
+          
+        { typeAlbum.items.map((each, index) => (
+          <div key={index} className="rounded-md mb-4 border-csd grid text-unfocus-500 hover:brightness-[.9] cursor-default">
+            
+            <div className="border-green-400 w-full rounded-md overflow-hidden">
+              <img width={'100%'} src={each.images[0]?.url}/>
+            </div>
+            
+            <p className="text-[rgba(255,255,255,0.8)]  text-xs mt-2"> { each.name } </p>
+            <p className="text-[rgba(255,255,255,0.5)]  text-xs "> { new Date(each.release_date).getFullYear()} </p>
+            
+          </div>
+        )) }
+        </section>
+        
+      </section>
+      )}
+      
+      
+      {!isEmpty(typeSingle) && (
+      <section className='mt-5'>
+        <p className="text-xl px-5 font-semibold text-white">Single</p>
+        
+        <section className="mt-2 border-green-400 grid md:grid-cols-[1fr_1fr] lg:grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr] gap-4 h overflow-hidden">
+          
+        { typeSingle.items.map((each, index) => (
+          <div key={index} className="rounded-md mb-4 border-csd grid text-unfocus-500 hover:brightness-[.9] cursor-default">
+            
+            <div className="border-green-400 w-full rounded-md overflow-hidden">
+              <img width={'100%'} src={each.images[0]?.url}/>
+            </div>
+            
+            <p className="text-[rgba(255,255,255,0.8)]  text-xs mt-2"> { each.name } </p>
+            <p className="text-[rgba(255,255,255,0.5)]  text-xs "> { new Date(each.release_date).getFullYear()} </p>
+            
+          </div>
+        )) }
+        </section>
+      </section>
+      )}
+      
+        
+      
+      
+      
+      
+      {/* <img src={data.images[0].url} /> */}
     </section>
+    </>
   );
 }
+

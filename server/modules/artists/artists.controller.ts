@@ -2,11 +2,11 @@ import axios from 'axios';
 import z from 'zod';
 import { BaseController } from '../../core/base.controller'
 import { Request, Response, NextFunction } from 'express';
-import { TopTracksSchema } from '../../schemas/spotify/topTracks.schema';
-import { TopArtistsSchema } from '../../schemas/spotify/topArtists.schema';
+import { topTracksSchema } from '../../schemas/spotify/topTracks.schema';
+import { topArtistsSchema } from '../../schemas/spotify/topArtists.schema';
 import { artistSchema } from '../../schemas/spotify/artist.schema';
-import { artistAlbumsSchema } from '../../schemas/spotify/artistAlbums';
-import { artistTopTracksSchema } from '../../schemas/spotify/artistTopTracks';
+import { artistAlbumsSchema } from '../../schemas/spotify/artistAlbums.schema';
+import { artistTopTracksSchema } from '../../schemas/spotify/artistTopTracks.schema';
 
 export default class artistController extends BaseController {
   

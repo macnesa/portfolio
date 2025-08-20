@@ -22,21 +22,23 @@ async function main() {
     // Dynamic import schema file
     const module = await import(filePath);
 
-    // Asumsi: export schema bernama PascalCase + "Schema"
     const baseName = path.basename(file, ".schema.ts");
-    const schemaName = toPascalCase(baseName) + "Schema";
+    const schemaVarName = baseName + "Schema"; // camelCase + "Schema" untuk variabel Zod schema, ex: artistSchema
 
-    const schema = module[schemaName];
+    const schema = module[schemaVarName];
     if (!schema) {
-      console.warn(`⚠️ Schema ${schemaName} tidak ditemukan di ${file}`);
+      console.warn(`⚠️ Schema ${schemaVarName} tidak ditemukan di ${file}`);
       continue;
     }
 
-    // Generate node tipe literal dari zod schema
-    const { node: typeLiteralNode } = zodToTs(Response(schema), schemaName.replace("Schema", ""));
+    const typeName = toPascalCase(baseName); // PascalCase untuk type alias, ex: Artist
 
-    // Bungkus type literal jadi type alias declaration yang diexport
-    const typeAliasNode = createTypeAlias(schemaName.replace("Schema", ""), typeLiteralNode as ts.TypeNode);
+    // Generate type literal
+    const { node: typeLiteralNode } = zodToTs(Response(schema), typeName);
+
+    // Bungkus jadi type alias declaration export
+    const typeAliasNode = createTypeAlias(typeName, typeLiteralNode as ts.TypeNode);
+
 
     // Cetak node jadi string kode TypeScript
     const output = printNode(typeAliasNode);
@@ -45,7 +47,7 @@ async function main() {
     const content = `// AUTO GENERATED DO NOT OVERRIDE \n\n${output}\n`;
 
     fs.writeFileSync(outputPath, content, "utf-8");
-    console.log(`✅ Generated type for ${schemaName} → ${outputPath}`);
+    console.log(`✅ Generated type for ${schemaVarName} → ${outputPath}`);
   }
 }
 

@@ -29,7 +29,35 @@ export default function RootLayout({ children }: Readonly<{children: React.React
           <RouteGuard>
             {children}
           </RouteGuard>
+          
+          <footer className="h-28 rounded-lg shadow bg-gray-800">
+            <div className="w-full mx-auto  md:p-6 p-4 md:flex md:items-center md:justify-between">
+              <span className="text-sm sm:text-center text-gray-400">© Craftly made by <a
+                  href="https://macnesa.com/" className="hover:underline font-semibold">macnesa</a>. This app used Spotify
+                Official API to access your data.
+              </span>
+              <ul className="flex flex-wrap items-center mt-3 text-sm text-gray-400 sm:mt-0">
+                <li>
+                  <a href="https://developer.spotify.com/documentation/web-api/" className="mr-4 hover:underline md:mr-6 ">Spotify
+                    API</a>
+                </li>
+                <li>
+                  <a href="https://developer.spotify.com/policy/" className="mr-4 hover:underline md:mr-6">Privacy Policy</a>
+                </li>
+                <li>
+                  <a href="https://github.com/macnesa" className="mr-4 hover:underline md:mr-6">Visit My Github</a>
+                </li>
+                <li>
+                  <a href="https://www.instagram.com/macnesa_/" className="hover:underline">My Ig</a>
+                </li>
+              </ul>
+            </div>
+          </footer>
+          
         </div>
+        
+        
+        
         
         
         

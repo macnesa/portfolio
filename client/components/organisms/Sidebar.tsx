@@ -5,8 +5,8 @@ import Link from "next/link";
 
 export default function Sidebar() {
   return (
-    <aside id="cta-button-sidebar" className="fixed top-0 left-0 z-40 w-60 h-screen bg-amber-500 transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
-      <div id="sidebar" className="h-full px-2 pt-4 pb-24 overflow-y-auto bg-white dark:bg-dark">
+    <aside id="cta-button-sidebar" className="fixed top-0 left-0 z-40 w-60 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
+      <div id="sidebar" className="h-full px-2 pt-4 pb-24 overflow-y-auto bg-white dark:bg-dark border-[0.5px] border-r-[#4a4949]">
         {/* Logo */}
         <ul>
           <li className="border-white">

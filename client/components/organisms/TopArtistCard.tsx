@@ -1,11 +1,11 @@
 "use client";
 
-import { useArtistsStore } from "@/store/useArtistsStore";
+import { useTopArtistsStore } from "@/store/spotify/userStore";
 import { useEffect, useMemo } from "react";
 
 export default function TopArtistCard() {
 
-  const { data, fetch, loading } = useArtistsStore();
+  const { data, fetch, loading } = useTopArtistsStore();
 
   useEffect(() => {
     if (!data) fetch();

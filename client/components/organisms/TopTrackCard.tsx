@@ -1,10 +1,9 @@
 "use client";
-
-import { useTracksStore } from "@/store/useTracksStore";
+import { useTopTracksStore } from "@/store/spotify/userStore";
 import { useEffect } from "react";
 
 export default function TopTrackCard() {
-  const { data, fetch, loading } = useTracksStore();
+  const { data, fetch, loading } = useTopTracksStore();
 
   useEffect(() => {
     if (!data) fetch();

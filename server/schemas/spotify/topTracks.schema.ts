@@ -23,4 +23,4 @@ export const Item = object({
   uri: string(),
 }).strict();
 
-export const TopTracksSchema = pagingObject(Item)
+export const topTracksSchema = pagingObject(Item)

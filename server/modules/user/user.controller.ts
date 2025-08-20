@@ -2,8 +2,8 @@ import axios from 'axios';
 import z from 'zod';
 import { BaseController } from '../../core/base.controller'
 import { Request, Response, NextFunction } from 'express';
-import { TopTracksSchema } from '../../schemas/spotify/topTracks.schema';
-import { TopArtistsSchema } from '../../schemas/spotify/topArtists.schema';
+import { topTracksSchema } from '../../schemas/spotify/topTracks.schema';
+import { topArtistsSchema } from '../../schemas/spotify/topArtists.schema';
 export default class userController extends BaseController {
   
   constructor() {
@@ -18,8 +18,8 @@ export default class userController extends BaseController {
     const type = req.params['type'];
     const limit = req.query['limit']; 
     const schemaMap = {
-      artists: TopArtistsSchema,
-      tracks: TopTracksSchema,
+      artists: topArtistsSchema,
+      tracks: topTracksSchema,
     } as const;
     
     if (!(type in schemaMap)) {

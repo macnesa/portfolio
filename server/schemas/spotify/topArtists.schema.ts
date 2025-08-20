@@ -15,4 +15,4 @@ export const Item = object({
   uri: string()
 }).strict()
 
-export const TopArtistsSchema = pagingObject(Item)
+export const topArtistsSchema = pagingObject(Item)
