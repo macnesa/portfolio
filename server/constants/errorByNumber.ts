@@ -10,4 +10,5 @@ export const ErrorByNumber: Record<number, ErrorDetail> = {
   404: { status: 404, message: "Not Found" },
   409: { status: 409, message: "Conflict" },
   500: { status: 500, message: "Internal Server Error" },
+  502: { status: 502, message: "Bad Gateway" },
 };

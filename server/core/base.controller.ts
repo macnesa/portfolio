@@ -46,10 +46,11 @@ export class BaseController {
   protected error(
     next: NextFunction,
     statusCode: number,
-    message?: string
+    message?: string,
+    errors?: any
   ): void {
     const errorDetail = ErrorByNumber[statusCode] ?? ErrorByNumber[500];
     const finalMessage = message && message.trim().length > 0 ? message : errorDetail.message;
-    next(new AppError(errorDetail.status, finalMessage));
+    next(new AppError(errorDetail.status, finalMessage, errors));
   }
 }

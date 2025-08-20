@@ -1,6 +1,9 @@
 import axios from 'axios';
+import z from 'zod';
 import { BaseController } from '../../core/base.controller'
 import { Request, Response, NextFunction } from 'express';
+import { TopTracksSchema } from '../../schemas/spotify/topTracks.schema';
+import { TopArtistsSchema } from '../../schemas/spotify/topArtists.schema';
 export default class userController extends BaseController {
   
   constructor() {
@@ -12,9 +15,18 @@ export default class userController extends BaseController {
   
   /* :type -> artists | tracks */
   async getTopByType(req: Request, res: Response, next:NextFunction) {
-    let url = `${this.SPOTIFY_API}/me/top/${req.params['type']}`;
+    const type = req.params['type'];
+    const limit = req.query['limit']; 
+    const schemaMap = {
+      artists: TopArtistsSchema,
+      tracks: TopTracksSchema,
+    } as const;
     
-    const limit = req.query.limit; 
+    if (!(type in schemaMap)) {
+      return this.error(next, 400, "Invalid path parameter"); 
+    }
+    
+    let url = `${this.SPOTIFY_API}/me/top/${type}`;
     if (limit) url += `?limit=${limit}`;
     
     const { data } = await axios.get(url, {
@@ -22,25 +34,13 @@ export default class userController extends BaseController {
         Authorization: `Bearer ${(req as any).accessToken}`,
       },
     });
-    this.sendSuccess(res, data)
+    const schema = schemaMap[type as keyof typeof schemaMap];
+    
+    const parsed = schema.safeParse( data );
+    if(!parsed.success) {
+      return this.error(next, 502, 'Invalid response data from Spotify API', parsed.error.issues);
+    } 
+    this.sendSuccess(res, parsed.data)
   }
   
-  // async getUser(req: Request, res: Response): Promise<any> {
-  //   this.response(res, true, 200, 'Success', { desc: "Ini adalah route getUser" })
-  // }
-  
-  // async getProfile(access_token: string): Promise<any> {
-  //   try {
-  //     const { data } = await axios({
-  //       method: "get",
-  //       url: "https://api.spotify.com/v1/me",
-  //       headers: {
-  //         Authorization: `Bearer ` + access_token,
-  //       },
-  //     });
-  //     return data;
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
 }

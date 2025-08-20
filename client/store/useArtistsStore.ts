@@ -1,13 +1,14 @@
-import { TopTracks } from '../types/topTracks'
 import { create } from "zustand";
+import { TopArtists } from '../types/topArtists'
+
 interface State {
   error: string | null
-  data: TopTracks['data'] | null;
+  data: TopArtists['data'] | null;
   loading: boolean;
   fetch: () => Promise<void>;
 }
 
-export const useTracksStore = create<State>((set) => ({
+export const useArtistsStore = create<State>((set) => ({
   data: null,
   loading: false,
   error: null,
@@ -15,13 +16,13 @@ export const useTracksStore = create<State>((set) => ({
   fetch: async () => {
     set({ loading: true, error: null });
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/user/getTop/tracks`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/user/getTop/artists`, {
         method: 'GET',
         credentials: 'include',
       });
-      const json: TopTracks = await res.json();
+      const json: TopArtists = await res.json();
       if (!json.success) {
-        throw new Error(json.message || 'Failed to fetch tracks');
+        throw new Error(json.message || 'Failed to fetch artists');
       }
       set({ data: json.data, loading: false });
     } catch (err: any) {

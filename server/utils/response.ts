@@ -18,6 +18,7 @@ export interface ApiResponse<T = any, E = any> {
   error?: E;
 }
 
+/* any changes here must be applied to /schema/shared/response.schema.ts */
 export function sendResponse<T = any, E = any>(
   res: Response,
   success: boolean,

@@ -1,7 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { Request, Response, NextFunction } from 'express';
 import { BaseController } from '../../core/base.controller'
-import { redirectSchema } from '../../schemas/zod.schema';
 import { NoAuth } from '../../decorators/NoAuth';
 import crypto from "crypto";
 import { z } from 'zod'
@@ -53,6 +52,9 @@ export default class authController extends BaseController {
     const maxAgeAccess = expiresInSec * 1000; // ms
     const maxAgeRefresh = 30 * 24 * 60 * 60 * 1000; // 30 hari
     
+    /** 
+     * @be_careful_of_production_cross_origin !!
+    */
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className="bg-dar">
+      <body className="bg-dark">
         <Sidebar/>
         <div className="ml-60 py-5 px-5">
           <RouteGuard>

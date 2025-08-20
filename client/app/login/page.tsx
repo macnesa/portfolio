@@ -1,6 +1,6 @@
 "use client"; 
 import { useEffect } from "react";
-import { SPOTIFY_AUTH_URL } from "../constants/constants";
+import { SPOTIFY_AUTH_URL } from "../../constants/constants";
 
 export default function LoginPage() {
   useEffect(() => {
