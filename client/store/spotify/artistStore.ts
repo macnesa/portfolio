@@ -61,7 +61,7 @@ export const useArtistTopTracksStore = create< State<ArtistTopTracks['data']> >(
       );
       const json: ArtistTopTracks = await res.json();
       if (!json.success) {
-        throw new Error(json.message || "Failed to fetch artists");
+        throw new Error(json.message || "Failed to fetch tracks");
       }
       set({ data: json.data, loading: false });
     } catch (err: any) {

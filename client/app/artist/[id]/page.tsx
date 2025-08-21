@@ -5,6 +5,8 @@ import { notFound } from 'next/navigation';
 import { useMemo, useEffect, use } from "react";
 import isEmpty from 'lodash/isEmpty'
 import filter from 'lodash/filter'
+import Link from 'next/link';
+import { Text } from '@/components/atoms/Text';
 
 export default function ArtistPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -18,18 +20,18 @@ export default function ArtistPage({ params }: { params: Promise<{ id: string }>
  
   useEffect(() => {
     setIdA(id);
-    if (!artist) fetchA();
-  }, [id, artist, fetchA]);
+     fetchA();
+  }, [id]);
   
   useEffect(() => {
     setIdB(id);
-    if (!topTracks) fetchB();
-  }, [id, topTracks, fetchB]);
+    fetchB();
+  }, [id]);
   
   useEffect(() => {
     setIdC(id);
-    if (!albums) fetchC();
-  }, [id, albums, fetchC]);
+    fetchC();
+  }, [id]);
   
   console.log(albums);
   
@@ -51,7 +53,7 @@ export default function ArtistPage({ params }: { params: Promise<{ id: string }>
     }
   }, [albums]);
   
-  if(isEmpty(artist) || isEmpty(topTracks) ) return <></>
+  if(isEmpty(artist) || isEmpty(topTracks) || isEmpty(albums) ) return <></>
   
   
   // const typeSingle = useMemo(() => { 
@@ -62,40 +64,42 @@ export default function ArtistPage({ params }: { params: Promise<{ id: string }>
     <>
     {/* v-if="false" style={{background: "#2f2e60"}} border-[2px] border-[rgba(173,167,181,0.2)] */}
     <section className=" h-auto w-full box-border overflow-hidden shadow-xl  grid">
-      <section style={{ backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url(${artist.images[0].url})` }} className="h-auto p-8 min-h-[34rem] w-full box-border overflow-hidden shadow-xl border-red-200 grid lg:grid-flow-col lg:grid-cols-[max-content_1fr] bg-center bg-no-repeat bg-cover">
+      <section style={{ backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url(${artist.images[0].url})` }} className=" h-auto p-8 min-h-[34rem] w-full box-border overflow-hidden shadow-xl border-red-200 grid lg:grid-flow-col lg:grid-cols-[max-content_1fr] bg-center bg-no-repeat bg-cover">
         {/* <div className="grid items-center self-end">
           <div style={{boxShadow: "-1px -1px 30px -9px rgba(0,0,0,1)"}} className="w-[20rem] h-[20rem] border-l-blue-200 grid grid-flow-col grid-cols-[1fr_1fr] grid-rows-[1fr_1fr]">
             
           </div>
         </div> */}
         <div className="border-l-fuchsia-600 flex flex-col justify-end lg:px-4">
-          <p className="sm:text-4xl md:text-6xl lg:text-8xl mb-4 font-extrabold text-white">{artist.name}</p>
+          <Text className="sm:text-4xl md:text-6xl lg:text-8xl mb-4 font-extrabold ">{artist.name}</Text>
         </div>
       </section>
       
       <section className='mt-5'>
-        <p className="text-xl px-5 font-semibold text-white">Top Songs</p>
+        <Text className="text-xl font-semibold ">Top Songs</Text>
         
         <div className=" w-full box-border overflow-hidden mt-2 pb-2 shadow-xl  border-yellow-300  grid items-center grid-flow-cols  grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        {topTracks.tracks.map((each, index) => (
+          {topTracks.tracks.map((each, index) => (
           // onDoubleClick={() => playMusic(each.track)} ${isPreviewAvailable(each.track)}
           <button key={index} className={` teer border-[rgba(222,222,222,0.1)] border-t hover:bg-[rgba(222,222,222,0.1)] hover:text-white text-unfocus-500  mx-2 focus:bg-[rgba(222,222,222,0.3)] cursor-pointer`}>
             <div className="px-3 py-2 flex border-white">
               <img src={each.album.images[1]?.url} className="rounded-sm" width={40} height={40} alt="" />
               <div className="ml-4 p-0 flex flex-col text-start border-white justify-center truncate">
-                <p className="text-sm flex text-white border-red-300"> {each.name} </p>
-                <p className="text-[rgba(255,255,255,0.5)] text-xs border-red-300"> {each.album.name} -  { new Date(each.album.release_date).getFullYear()} </p>
+                <Text className="text-sm flex  border-red-300"> {each.name} </Text>
+                <span className="text-[rgba(255,255,255,0.5)] text-xs border-red-300"> 
+                  <Link href={`/album/${each.album.id}`} className='hover:underline'>{each.album.name}</Link> -  { new Date(each.album.release_date).getFullYear()} 
+                  </span>
               </div>
             </div>
           </button>
-        ))}
+          ))}
         </div>
         
       </section>
       
-      {!isEmpty(typeAlbum) && (
+      {!isEmpty(typeAlbum) && !isEmpty(typeAlbum?.items) && (
       <section className='mt-5'>
-        <p className="text-xl px-5 font-semibold text-white">Albums</p>
+        <Text className="text-xl font-semibold ">Albums</Text>
         
         <section className="mt-2 border-green-400 grid md:grid-cols-[1fr_1fr] lg:grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr] gap-4 h overflow-hidden">
           
@@ -106,8 +110,8 @@ export default function ArtistPage({ params }: { params: Promise<{ id: string }>
               <img width={'100%'} src={each.images[0]?.url}/>
             </div>
             
-            <p className="text-[rgba(255,255,255,0.8)]  text-xs mt-2"> { each.name } </p>
-            <p className="text-[rgba(255,255,255,0.5)]  text-xs "> { new Date(each.release_date).getFullYear()} </p>
+            <Text className="text-[rgba(255,255,255,0.8)]  text-xs mt-2"> { each.name } </Text>
+            <Text className="text-[rgba(255,255,255,0.5)]  text-xs "> { new Date(each.release_date).getFullYear()} </Text>
             
           </div>
         )) }
@@ -117,9 +121,9 @@ export default function ArtistPage({ params }: { params: Promise<{ id: string }>
       )}
       
       
-      {!isEmpty(typeSingle) && (
+      {!isEmpty(typeSingle) && !isEmpty(typeSingle.items) && (
       <section className='mt-5'>
-        <p className="text-xl px-5 font-semibold text-white">Single</p>
+        <Text className="text-xl px-5 font-semibold ">Single</Text>
         
         <section className="mt-2 border-green-400 grid md:grid-cols-[1fr_1fr] lg:grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr] gap-4 h overflow-hidden">
           
@@ -130,8 +134,8 @@ export default function ArtistPage({ params }: { params: Promise<{ id: string }>
               <img width={'100%'} src={each.images[0]?.url}/>
             </div>
             
-            <p className="text-[rgba(255,255,255,0.8)]  text-xs mt-2"> { each.name } </p>
-            <p className="text-[rgba(255,255,255,0.5)]  text-xs "> { new Date(each.release_date).getFullYear()} </p>
+            <Text className="text-[rgba(255,255,255,0.8)]  text-xs mt-2"> { each.name } </Text>
+            <Text className="text-[rgba(255,255,255,0.5)]  text-xs "> { new Date(each.release_date).getFullYear()} </Text>
             
           </div>
         )) }

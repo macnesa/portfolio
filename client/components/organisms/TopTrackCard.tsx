@@ -16,7 +16,7 @@ export default function TopTrackCard() {
   const artistNames = topTrack.artists.map((a) => a.name).join(", ");
 
   return (
-    <section style={{ backgroundImage: "url()", backgroundSize: "cover", background: "linear-gradient(40deg, rgba(178,173,187,1) 0%, rgba(202,196,210,1) 39%, rgba(215,208,226,1) 100%)", border: "2px solid transparent" }} className="grid mt-8 h-[80vh] rounded-2xl border-green-400 overflow-hidden box-border">
+    <section style={{ backgroundImage: "url()", backgroundSize: "cover", background: "linear-gradient(40deg, rgba(178,173,187,1) 0%, rgba(202,196,210,1) 39%, rgba(215,208,226,1) 100%)", border: "2px solid transparent" }} className="grid mt-8 h-[40rem] rounded-2xl border-green-400 overflow-hidden box-border">
       
       <div className="h-full w-full overflow-hidden lg:mt-0 grid items-end justify-end row-start-1 col-start-1">
         <div style={{ transform: "rotate(30deg) translate(270px, -60px)", boxShadow: "-15px 130px 45px -6px rgba(0,0,0,0.31)", transformOrigin: "0 0" }} className="h-[700px] w-[700px] grid grid-flow-col overflow-hidden">
