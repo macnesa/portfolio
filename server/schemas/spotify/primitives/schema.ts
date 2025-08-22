@@ -8,6 +8,14 @@ export const ExternalIds = object({
   isrc: string(),
 });
 
+export const ExternalUpc = object({
+  upc: string(),
+});
+
+export const Restrictions = object({
+  reason: string()
+})
+
 export const Image = object({
   height: number(),
   url: string(),
@@ -45,7 +53,18 @@ export const Album = object({
   uri: string(),
 });
 
+export const Copyright = object({
+  text: string(),
+  type: string()
+})
 
+export const LinkedFrom = object({
+  external_urls: ExternalUrls,
+  href: string(),
+  id: string(),
+  type: string(),
+  uri: string()
+})
 
 export const pagingObject = <T extends ZodType<any>>(item: T) =>
   object({

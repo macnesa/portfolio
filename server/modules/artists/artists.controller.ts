@@ -8,7 +8,7 @@ import { artistSchema } from '../../schemas/spotify/artist.schema';
 import { artistAlbumsSchema } from '../../schemas/spotify/artistAlbums.schema';
 import { artistTopTracksSchema } from '../../schemas/spotify/artistTopTracks.schema';
 
-export default class artistController extends BaseController {
+export default class artistsController extends BaseController {
   
   constructor() {
     super();
