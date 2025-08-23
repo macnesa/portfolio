@@ -4,6 +4,8 @@ import { BaseController } from '../../core/base.controller'
 import { NoAuth } from '../../decorators/NoAuth';
 import crypto from "crypto";
 import { z } from 'zod'
+import { UserService } from '../user/user.service';
+import { db } from '../../db';
 
 export default class authController extends BaseController {
   private get clientId(): string {
@@ -116,7 +118,16 @@ export default class authController extends BaseController {
     const token = await this.secondCall(code);
     const { access_token, refresh_token, expires_in } = token.data;
     
-    console.log("vatuh", token.data);
+    const profile = await UserService.getSpotifyProfile(access_token);
+    
+    let check = await db.selectFrom('users').selectAll().where('spotify_id', '=', profile.id).executeTakeFirst();
+    if(!check) {
+      await db.insertInto('users').values({
+        username : profile.display_name,
+        spotify_id: profile.id,
+        avatar: profile.images?.[0].url ?? null,
+      }).execute(); 
+    }
     
   
     this.setAuthCookies(res, access_token, refresh_token, Number(expires_in));

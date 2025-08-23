@@ -23,13 +23,15 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className="bg-dark min-h-screen">
+      {/* bg-dark */}
+      <body className=" min-h-screen">
         {/* Sidebar fixed */}
-        <Sidebar />
+        {/* <Sidebar /> */}
 
         {/* Main content area */}
-        <main className="pl-60 flex justify-center">
-          <div className="w-full max-w-[1700px] px-10">
+        <main className=" flex justify-center">
+        {/* px-10 pl-60 */}
+          <div className="w-full max-w-[1200px] ">
             <RouteGuard>
               {children}
             </RouteGuard>
