@@ -23,7 +23,7 @@ export default class albumsController extends BaseController {
     
     const { data } = await axios.get(url, {
       headers: {
-        Authorization: `Bearer ${(req as any).accessToken}`,
+        Authorization: `Bearer ${(req as any).spotifyAccessToken}`,
       },
     });
     
@@ -42,7 +42,7 @@ export default class albumsController extends BaseController {
     
     const { data } = await axios.get(url, {
       headers: {
-        Authorization: `Bearer ${(req as any).accessToken}`,
+        Authorization: `Bearer ${(req as any).spotifyAccessToken}`,
       },
     });
     

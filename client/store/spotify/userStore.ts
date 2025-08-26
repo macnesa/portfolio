@@ -18,7 +18,7 @@ export const useTopArtistsStore = create< State<TopArtists['data']> >((set) => (
     set({ loading: true, error: null });
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/user/getTop/artists`,
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/spotify/user/getTop/artists`,
         {
           method: "GET",
           credentials: "include",
@@ -42,7 +42,7 @@ export const useTopTracksStore = create< State<TopTracks['data']> >((set) => ({
   fetch: async () => {
     set({ loading: true, error: null });
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/user/getTop/tracks`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/spotify/user/getTop/tracks`, {
         method: 'GET',
         credentials: 'include',
       });

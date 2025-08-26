@@ -24,7 +24,7 @@ export const useArtistStore = create< State<Artist['data']> >((set, get) => ({
     set({ loading: true, error: null });
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/artists/getArtist/${id}`,
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/spotify/artists/getArtist/${id}`,
         {
           method: "GET",
           credentials: "include",
@@ -53,7 +53,7 @@ export const useArtistTopTracksStore = create< State<ArtistTopTracks['data']> >(
     set({ loading: true, error: null });
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/artists/getTopTracks/${id}`,
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/spotify/artists/getTopTracks/${id}`,
         {
           method: "GET",
           credentials: "include",
@@ -82,7 +82,7 @@ export const useArtistAlbumsStore = create< State<ArtistAlbums['data']> >((set, 
     set({ loading: true, error: null });
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/artists/getAlbums/${id}`,
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/spotify/artists/getAlbums/${id}`,
         {
           method: "GET",
           credentials: "include",

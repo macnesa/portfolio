@@ -1,13 +1,24 @@
 import { sendResponse } from "../utils/response"
 import { Response, NextFunction } from "express"
-import { SPOTIFY_API_BASE_URL, SPOTIFY_AUTH_BASE_URL } from "../constants/url";
+import { SPOTIFY_API_BASE_URL, SPOTIFY_AUTH_BASE_URL, LASTFM_AUTH_BASE_URL, LASTFM_API_BASE_URL } from "../constants/url";
 import { ErrorByNumber } from "../constants/errorByNumber";
 import AppError from "../utils/AppError";
 export class BaseController {
   
   protected SPOTIFY_API = SPOTIFY_API_BASE_URL;
   protected SPOTIFY_AUTH = SPOTIFY_AUTH_BASE_URL;
+  protected LASTFM_AUTH = LASTFM_AUTH_BASE_URL;
+  protected LASTFM_API = LASTFM_API_BASE_URL;
   protected AppError = AppError;
+  
+  protected get lastFmKey(): string {
+    if (!process.env.LASTFM_API_KEY) throw new Error("Missing LASTFM_API_KEY in env");
+    return process.env.LASTFM_API_KEY;
+  }
+  protected get lastFmSecret(): string {
+    if (!process.env.LASTFM_SECRET) throw new Error("Missing LASTFM_SECRET in env");
+    return process.env.LASTFM_SECRET;
+  }
   
   /**
    * Menghasilkan respons API standar.

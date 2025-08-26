@@ -20,7 +20,7 @@ export default class playerController extends BaseController {
     
     const { data } = await axios.get(url, {
       headers: {
-        Authorization: `Bearer ${(req as any).accessToken}`,
+        Authorization: `Bearer ${(req as any).spotifyAccessToken}`,
       },
     });
     this.sendSuccess(res, data)

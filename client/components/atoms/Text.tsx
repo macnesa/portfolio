@@ -8,7 +8,7 @@ interface TextProps {
 
 export const Text: React.FC<TextProps> = ({ children, className }) => {
   return (
-    <p className={twMerge("block text-white", className)}>
+    <p className={twMerge("block dark:text-white text-neutral-800", className)}>
       {children}
     </p>
   );

@@ -17,10 +17,10 @@ export default function TopArtistsList() {
   
   return (
     <>
-      <div className="w-full mt-10 border-yellow-300">
+      <div className="w-full border-yellow-300">
         <Text className="text-xl ">Your Top Artists</Text>
-        <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-5 mt-2">
-          {data.items.slice(0,6).map((each, index) => (
+        <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 mt-2">
+          {data.items.slice(15,20).map((each, index) => (
             <Link href={`/artist/${each.id}`} key={index}>
               <div className="rounded-md mb-4 border-csd grid text-unfocus-500 hover:brightness-[.9] cursor-pointer">
                 

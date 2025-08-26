@@ -7,7 +7,7 @@ import api from "@/lib/api";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"; 
-import { FaSpotify } from "react-icons/fa";
+import { FaSpotify, FaLastfmSquare } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
  
 
@@ -31,6 +31,9 @@ export default function LoginPage() {
   
   const spotifySignIn = () => {
     window.location.assign(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/getLogin`)
+  }
+  const lastFmSignIn = () => {
+    window.location.assign(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/getLoginLastfm`)
   }
   
   return (
@@ -63,9 +66,9 @@ export default function LoginPage() {
 
           {/* Social Logins */}
           <div className="grid grid-cols-2 gap-4">
-            <Button  className="flex items-center justify-center gap-2">
-              <FcGoogle/>
-              Google
+            <Button onClick={lastFmSignIn} className="flex items-center justify-center gap-2">
+              <FaLastfmSquare/>
+              Last.fm
             </Button>
             
             <Button onClick={spotifySignIn} className="flex items-center justify-center gap-2">

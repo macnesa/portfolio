@@ -4,6 +4,7 @@ import { BaseController } from '../../../core/base.controller'
 import { Request, Response, NextFunction } from 'express';
 import { topTracksSchema } from '../../../schemas/spotify/topTracks.schema';
 import { topArtistsSchema } from '../../../schemas/spotify/topArtists.schema';
+import { UserService } from './user.service';
 export default class userController extends BaseController {
   
   constructor() {
@@ -12,6 +13,13 @@ export default class userController extends BaseController {
   async index(req: Request, res: Response, next:NextFunction) {
     this.sendSuccess(res, { desc: "This is the User route" });
   }
+  
+  async getMe(req: Request, res: Response, next:NextFunction) {
+    const data = await UserService.getSpotifyProfile((req as any).spotifyAccessToken);
+    // tcdbt parse schema !
+    this.sendSuccess(res, data)
+  }
+
   
   /* :type -> artists | tracks */
   async getTopByType(req: Request, res: Response, next:NextFunction) {
@@ -31,7 +39,7 @@ export default class userController extends BaseController {
     
     const { data } = await axios.get(url, {
       headers: {
-        Authorization: `Bearer ${(req as any).accessToken}`,
+        Authorization: `Bearer ${(req as any).spotifyAccessToken}`,
       },
     });
     const schema = schemaMap[type as keyof typeof schemaMap];

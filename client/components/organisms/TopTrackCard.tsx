@@ -11,12 +11,13 @@ export default function TopTrackCard() {
 
   if (loading || !data?.items.length) return null;
 
-  const topTrack = data.items[9];
+  const topTrack = data.items[6];
   const albumImage = topTrack.album.images?.[0].url || "";
   const artistNames = topTrack.artists.map((a) => a.name).join(", ");
 
   return (
-    <section className="relative mt-8 max-w-4xl mx-auto rounded-2xl overflow-hidden bg-neutral-900 border border-neutral-800 shadow-lg">
+    // border border-neutral-800 max-w-5xl
+    <section className="relative w-full  rounded-2xl overflow-hidden bg-neutral-900   shadow-lg">
       {/* Background gradient / decorative */}
       <div className="absolute inset-0 bg-gradient-to-br from-rose-900 via-neutral-900 to-neutral-800 opacity-30 pointer-events-none" />
 

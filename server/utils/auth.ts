@@ -1,10 +1,11 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 export function generateJWT(userId: number) {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: "1h" });
+  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: "1D" });
 }
 
 export function verifyJWT(token: string) {
@@ -18,4 +19,10 @@ export async function hashPassword(password: string) {
 
 export async function comparePassword(password: string, hash: string) {
   return bcrypt.compare(password, hash);
+}
+
+export function buildSig(params: Record<string, string>, secret: string): string {
+  const orderedKeys = Object.keys(params).sort();
+  const baseString = orderedKeys.map(key => `${key}${params[key]}`).join('') + secret;
+  return crypto.createHash('md5').update(baseString, 'utf8').digest('hex');
 }

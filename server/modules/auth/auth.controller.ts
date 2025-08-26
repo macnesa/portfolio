@@ -6,7 +6,7 @@ import crypto from "crypto";
 import { z } from 'zod'
 import { UserService } from '../spotify/user/user.service';
 import { db } from '../../db';
-import { verifyJWT, hashPassword, comparePassword, generateJWT } from '../../utils/auth';
+import { buildSig, hashPassword, comparePassword, generateJWT } from '../../utils/auth';
 import jwt from "jsonwebtoken";
 import snakeCase from "lodash/snakeCase";
 import isEmpty from "lodash/isEmpty";
@@ -23,9 +23,9 @@ export default class authController extends BaseController {
     return process.env.CLIENT_SECRET;
   }
   
-  private get baseUrl(): string {
-    if (!process.env.BASEURL) throw new Error("Missing BASEURL in env");
-    return process.env.BASEURL;
+  private get redirectUrl(): string {
+    if (!process.env.SERVER_REDIRECT_URL) throw new Error("Missing SERVER_REDIRECT_URL in env");
+    return process.env.SERVER_REDIRECT_URL;
   }
   
   private get clientUrl(): string {
@@ -33,10 +33,13 @@ export default class authController extends BaseController {
     return process.env.CLIENT_URL;
   }
   
-  private get redirectUrl(): string {
-    if (!process.env.SERVER_REDIRECT_URL) throw new Error("Missing SERVER_REDIRECT_URL in env");
-    return process.env.SERVER_REDIRECT_URL;
+
+  
+  private get lastFmCallBack(): string {
+    if (!process.env.LASTFM_CALLBACK) throw new Error("Missing LASTFM_CALLBACK in env");
+    return process.env.LASTFM_CALLBACK;
   }
+  
   
   private get spotifyBuffer(): string {
     const raw = `${this.clientId}:${this.clientSecret}`;
@@ -95,7 +98,7 @@ export default class authController extends BaseController {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 1000 * 60 * 60,
+      maxAge: 1000 * 60 * 60 * 24, // 1 day
       path: "/",
     });
   } 
@@ -110,6 +113,7 @@ export default class authController extends BaseController {
     if (!isValid) return this.error(next, 401, "Invalid credentials");
     
     const token = user.id && generateJWT(user.id);
+    console.log("user token", token);
     if(token) this.setUserCookies(res, token); 
     
     this.sendSuccess(res, { desc: 'Sign In Success' })
@@ -203,6 +207,8 @@ export default class authController extends BaseController {
     const id = check?.user_id ?? user?.id;
     
     const token = generateJWT(id!);
+    console.log("userToken", token);
+    
     this.setUserCookies(res, token!); 
     // this.setSpotifyCookies(res, access_token, refresh_token, Number(expires_in));
     res.clearCookie("oauthState");
@@ -265,13 +271,36 @@ export default class authController extends BaseController {
       return res.redirect(`${this.clientUrl}${redirectTo}`);
     }
     this.sendSuccess(res, { desc: 'Refresh Token Request has been succesfully executed' })
-  };
+  }; 
   
-  async status(req: Request, res: Response) {
-    const accessToken = req.cookies.accessToken;
-    const accessExpiry = Number(req.cookies.accessTokenExpiry);
-    const hasAccess = typeof accessToken === "string" && accessToken.trim() !== "" && !Number.isNaN(accessExpiry) && Date.now() < accessExpiry;
-    this.sendSuccess(res, { loggedIn: hasAccess });
+  @NoAuth()
+  async getLoginLastfm(req: Request, res: Response) {
+    const url = `${this.LASTFM_AUTH}/auth?api_key=${this.lastFmKey}&cb=${encodeURIComponent(this.lastFmCallBack)}`
+    res.redirect(url);
+  } 
+  
+  @NoAuth()
+  async getRedirectLastFm(req: Request, res: Response, next: NextFunction) {
+    const { token } = req.query as { token?: string };
+    if (!token) return this.error(next, 400, "Missing token");
+    
+    const params = {
+      method: 'auth.getSession',
+      api_key: this.lastFmKey,
+      token,
+    };
+    
+    const api_sig = buildSig(params, this.lastFmSecret);
+    const paramsToSend = { ...params, api_sig, format: 'json' };
+    
+    const { data } = await axios.get('https://ws.audioscrobbler.com/2.0/', {
+      params: paramsToSend
+    });
+    
+    console.log("last fm session key", data);
+    
+
+    res.redirect(this.clientUrl);
   }
   
 }

@@ -20,6 +20,7 @@ export function authHandler(required: boolean = true) {
       const payload = jwt.verify(token, process.env.JWT_SECRET!) as { userId: number };
       (req as any).user = { id: payload.userId };
       
+      // tcdbt
       const spotifyAccount = await db.selectFrom('spotify_accounts')
       .selectAll()
       .where('user_id', '=', payload.userId)
@@ -27,8 +28,8 @@ export function authHandler(required: boolean = true) {
       
       if(spotifyAccount) {
         let {access_token, expires_in} = spotifyAccount;
-        
         const now = new Date();
+        
         if (!expires_in || new Date(expires_in) <= now) {
           try {
             const refreshed = await AuthService.refreshSpotifyToken(spotifyAccount.refresh_token!); // #tcdbt
@@ -44,8 +45,9 @@ export function authHandler(required: boolean = true) {
             console.error('Failed to refresh Spotify token:', error);
             return sendResponse(res, false, 401, 'Spotify access token expired and refresh failed');
           }
+        } else {
+          (req as any).spotifyAccessToken = spotifyAccount.access_token;
         }
-        
       }
       
       next();

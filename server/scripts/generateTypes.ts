@@ -1,57 +1,14 @@
-// server/scripts/generateTypes.ts
 import fs from "fs";
 import path from "path";
+import { pathToFileURL } from "url";
 import * as ts from "typescript";
-
 import { zodToTs } from "zod-to-ts";
 import { Response } from "../schemas/shared/response.schema";
 
-async function main() {
-  const schemasDir = path.resolve(__dirname, "../schemas/spotify");
-  const outputDir = path.resolve(__dirname, "../../client/types");
+const schemasRoot = path.resolve(__dirname, "../schemas"); // root folder schema
+const outputDir = path.resolve(__dirname, "../../client/types"); // tempat export .d.ts
 
-  if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true });
-  }
-
-  const files = fs.readdirSync(schemasDir).filter((f) => f.endsWith(".schema.ts"));
-
-  for (const file of files) {
-    const filePath = path.join(schemasDir, file);
-
-    // Dynamic import schema file
-    const module = await import(filePath);
-
-    const baseName = path.basename(file, ".schema.ts");
-    const schemaVarName = baseName + "Schema"; // camelCase + "Schema" untuk variabel Zod schema, ex: artistSchema
-
-    const schema = module[schemaVarName];
-    if (!schema) {
-      console.warn(`⚠️ Schema ${schemaVarName} tidak ditemukan di ${file}`);
-      continue;
-    }
-
-    const typeName = toPascalCase(baseName); // PascalCase untuk type alias, ex: Artist
-
-    // Generate type literal
-    const { node: typeLiteralNode } = zodToTs(Response(schema), typeName);
-
-    // Bungkus jadi type alias declaration export
-    const typeAliasNode = createTypeAlias(typeName, typeLiteralNode as ts.TypeNode);
-
-
-    // Cetak node jadi string kode TypeScript
-    const output = printNode(typeAliasNode);
-
-    const outputPath = path.join(outputDir, `${baseName}.d.ts`);
-    const content = `// AUTO GENERATED DO NOT OVERRIDE \n\n${output}\n`;
-
-    fs.writeFileSync(outputPath, content, "utf-8");
-    console.log(`✅ Generated type for ${schemaVarName} → ${outputPath}`);
-  }
-}
-
-function toPascalCase(str: string) {
+function toPascalCase(str: string): string {
   return str.replace(/(^\w|-\w)/g, (match) => match.replace(/-/, "").toUpperCase());
 }
 
@@ -67,13 +24,70 @@ function printNode(node: ts.Node): string {
   return printer.printNode(ts.EmitHint.Unspecified, node, sourceFile);
 }
 
-function createTypeAlias(typeName: string, typeNode: ts.TypeNode) {
+function createTypeAlias(typeName: string, typeNode: ts.TypeNode): ts.TypeAliasDeclaration {
   return ts.factory.createTypeAliasDeclaration(
-    [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword)], // modifiers
-    typeName, // name
-    undefined, // type parameters
-    typeNode   // type
+    [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+    typeName,
+    undefined,
+    typeNode
   );
+}
+
+function getAllSchemaFiles(dir: string): string[] {
+  let results: string[] = [];
+
+  const list = fs.readdirSync(dir);
+  for (const file of list) {
+    const filePath = path.join(dir, file);
+    const stat = fs.statSync(filePath);
+
+    if (stat.isDirectory()) {
+      results = results.concat(getAllSchemaFiles(filePath));
+    } else if (file.endsWith(".schema.ts")) {
+      results.push(filePath);
+    }
+  }
+
+  return results;
+}
+
+async function main() {
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+  }
+
+  const schemaFiles = getAllSchemaFiles(schemasRoot);
+  
+
+  for (const filePath of schemaFiles) {
+    const fileName = path.basename(filePath);
+    const baseName = fileName.replace(".schema.ts", "");
+    const schemaVarName = baseName + "Schema";
+    const typeName = toPascalCase(baseName);
+
+    try {
+      // const module = await import(pathToFileURL(filePath).href);
+      const module = await import(filePath);
+      const schema = module[schemaVarName];
+
+      if (!schema) {
+        console.warn(`⚠️ Schema ${schemaVarName} tidak ditemukan di ${filePath}`);
+        continue;
+      }
+
+      const { node: typeLiteralNode } = zodToTs(Response(schema), typeName);
+      const typeAliasNode = createTypeAlias(typeName, typeLiteralNode as ts.TypeNode);
+      const output = printNode(typeAliasNode);
+
+      const outputPath = path.join(outputDir, `${baseName}.d.ts`);
+      const content = `// AUTO GENERATED DO NOT OVERRIDE \n\n${output}\n`;
+
+      fs.writeFileSync(outputPath, content, "utf-8");
+      console.log(`✅ Generated type for ${schemaVarName} → ${outputPath}`);
+    } catch (err) {
+      console.error("❌ Error importing " + filePath + ":", err);
+    }
+  }
 }
 
 main().catch((err) => {
