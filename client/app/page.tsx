@@ -15,12 +15,7 @@ export default function Home() {
       {/* <TopTrackCard/> */}
       {/* <SandboxPage/> */}
       {/* <TopArtistCard/> */}
-      <SandboxDua/>
-      
-      
-      
-      
-      
+      <SandboxDua/> 
     </>
   );
 }

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { SPOTIFY_API_BASE_URL, SPOTIFY_AUTH_BASE_URL } from "../../constants/url";
+import { SPOTIFY_API_BASE_URL, SPOTIFY_AUTH_BASE_URL } from "../../../constants/url";
 
 
 export class UserService {

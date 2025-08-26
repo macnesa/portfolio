@@ -9,6 +9,8 @@
 @theme inline {
   --color-dark: #1F1F1F;
   --color-light: #f9fafb;
+  --color-primary: #2E5077;
+  --color-danger: #FF5652;
 
   /* --color-dark-brighter: ; */
   /* --color-dark-darker: ; */

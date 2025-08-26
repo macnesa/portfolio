@@ -1,7 +1,6 @@
 import axios from 'axios';
-import { BaseController } from '../../core/base.controller'
+import { BaseController } from '../../../core/base.controller'
 import { Request, Response, NextFunction } from 'express';
-
 
 export default class playerController extends BaseController {
   
@@ -10,7 +9,7 @@ export default class playerController extends BaseController {
   }
   
   async index(req: Request, res: Response, next:NextFunction) {
-    this.response(res, true, 200, 'Success', { desc: "This is Player route" })
+    this.response(res, true, 200, 'Success', { desc: "This is Rachmunu route" })
   }
   
   async getCurrentlyPlaying(req: Request, res: Response, next:NextFunction) {

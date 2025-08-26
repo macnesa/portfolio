@@ -31,7 +31,7 @@ export default function RootLayout({ children }: Readonly<{children: React.React
         {/* Main content area */}
         <main className=" flex justify-center">
         {/* px-10 pl-60 */}
-          <div className="w-full max-w-[1200px] ">
+          <div className="w-full max-w-[1300px] ">
             <RouteGuard>
               {children}
             </RouteGuard>

@@ -1,15 +1,17 @@
 import axios from 'axios';
 import z from 'zod';
-import { BaseController } from '../../core/base.controller'
+import { BaseController } from '../../../core/base.controller'
 import { Request, Response, NextFunction } from 'express';
-import { albumSchema } from '../../schemas/spotify/album.schema';
-import { albumTracksSchema } from '../../schemas/spotify/albumTracks.schema';
+import { albumSchema } from '../../../schemas/spotify/album.schema';
+import { albumTracksSchema } from '../../../schemas/spotify/albumTracks.schema';
+import { NoAuth } from '../../../decorators/NoAuth';
 
 export default class albumsController extends BaseController {
   
   constructor() {
     super();
   }
+  @NoAuth()
   async index(req: Request, res: Response, next:NextFunction) {
     this.sendSuccess(res, { desc: "This is the Albums route" });
   }

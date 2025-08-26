@@ -1,9 +1,9 @@
 import axios from 'axios';
 import z from 'zod';
-import { BaseController } from '../../core/base.controller'
+import { BaseController } from '../../../core/base.controller'
 import { Request, Response, NextFunction } from 'express';
-import { topTracksSchema } from '../../schemas/spotify/topTracks.schema';
-import { topArtistsSchema } from '../../schemas/spotify/topArtists.schema';
+import { topTracksSchema } from '../../../schemas/spotify/topTracks.schema';
+import { topArtistsSchema } from '../../../schemas/spotify/topArtists.schema';
 export default class userController extends BaseController {
   
   constructor() {

@@ -6,27 +6,23 @@ import { useFormModel } from "@/hooks/useFormModel";
 import api from "@/lib/api";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; 
-import { FaSpotify } from "react-icons/fa";
-import { FcGoogle } from "react-icons/fc";
- 
 
-export default function LoginPage() {
-  const router = useRouter();
-  
+export default function RegisterPage() {
   const { model, form } = useFormModel({ 
+    username: null,
     email: null,
     password: null
   }); 
   
 
   const manualSignIn = async () => {
-   try {
-    const response = await api.post("/auth/postManualSignIn", model);
-    router.push('/')
-   } catch (error) {
-    console.error(error);
-   }
+    try {
+      const response = await api.post("/auth/postManualSignUp", model);
+      
+    } catch (error) {
+      console.error(error);
+      
+    }
   };
   
   const spotifySignIn = () => {
@@ -39,19 +35,20 @@ export default function LoginPage() {
         
         {/* Left - Login Form */}
         <div className="w-full max-w-md bg-white  rounded-2xl border border-gray-200 p-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome back</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">Create Your Account</h2>
           <p className="text-gray-600 mb-8">
-            Start your journey in seconds. Don’t have an account?{" "}
-            <Link href={`/register`} className="hover:underline text-blue-600"> Sign up </Link> 
+            Start your journey in seconds. Alredy have an account?{" "}
+            <Link href={`/login`} className="hover:underline text-blue-600"> Sign in </Link>
           </p>
 
           {/* onSubmit={handleSubmit}  */}
           <div className="space-y-6">
             <div className="grid gap-2">
+              <TextField type="text" label={"Username"} name={'username'} model={model} placeholder="iamcoldplay23" />
               <TextField type="email" label={"Email"} name={'email'} model={model} placeholder="name@gmail.com" />
               <TextField type="password" label={"Password"} name={'password'} model={model} />
             </div>
-            <Button type="primary" onClick={manualSignIn}>Sign in to your account</Button>
+            <Button type="primary" onClick={manualSignIn}>Sign Up to your account</Button>
           </div>
 
           {/* Divider */}
@@ -63,28 +60,14 @@ export default function LoginPage() {
 
           {/* Social Logins */}
           <div className="grid grid-cols-2 gap-4">
-            <Button  className="flex items-center justify-center gap-2">
-              <FcGoogle/>
+            <Button>
               Google
             </Button>
             
-            <Button onClick={spotifySignIn} className="flex items-center justify-center gap-2">
-              <FaSpotify color="#1DB954"/>
-              <span>Spotify</span>
+            <Button onClick={spotifySignIn}>
+              Spotify
             </Button>
-            
-            
-            {/* <button
-              className="flex items-center justify-center gap-2 border border-gray-300 py-3 rounded-lg hover:bg-gray-50 transition"
-            >
-              <span className="font-medium text-gray-700">Google</span>
-            </button> */}
-
-            {/* <button
-              className="flex items-center justify-center gap-2 border border-gray-300 py-3 rounded-lg hover:bg-gray-50 transition"
-            >
-              <span className="font-medium text-gray-700">Spotify</span>
-            </button> */}
+             
           </div>
 
         </div>
