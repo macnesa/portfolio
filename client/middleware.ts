@@ -9,19 +9,19 @@ export function middleware(req: NextRequest) {
   const acceptHeader = req.headers.get("accept") || "";
   if (!acceptHeader.includes("text/html")) return NextResponse.next();
 
-  const token = req.cookies.get("accessToken")?.value;
+  // const token = req.cookies.get("accessToken")?.value;
 
-  const isAuthenticated = Boolean(token);
+  // const isAuthenticated = Boolean(token);
 
-  if (isAuthenticated && guestPages.includes(path)) {
-    url.pathname = "/";
-    return NextResponse.redirect(url);
-  }
+  // if (isAuthenticated && guestPages.includes(path)) {
+  //   url.pathname = "/";
+  //   return NextResponse.redirect(url);
+  // }
 
-  if (!isAuthenticated && !guestPages.includes(path)) {
-    url.pathname = "/login";
-    return NextResponse.redirect(url);
-  }
+  // if (!isAuthenticated && !guestPages.includes(path)) {
+  //   url.pathname = "/login";
+  //   return NextResponse.redirect(url);
+  // }
 
   return NextResponse.next();
 }
