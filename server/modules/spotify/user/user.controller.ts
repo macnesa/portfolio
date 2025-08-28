@@ -11,7 +11,7 @@ export default class userController extends BaseController {
     super();
   }
   async index(req: Request, res: Response, next:NextFunction) {
-    this.sendSuccess(res, { desc: "This is the User route" });
+    this.sendSuccess(res, { desc: "This is the kontol route" });
   }
   
   async getMe(req: Request, res: Response, next:NextFunction) {

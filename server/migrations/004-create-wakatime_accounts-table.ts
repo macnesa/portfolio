@@ -3,7 +3,7 @@ import type { DB } from '../types/db'
 
 export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
-    .createTable('spotify_accounts')
+    .createTable('wakatime_accounts')
     .addColumn('id', 'text', (col) => col.notNull().unique())
     .addColumn('user_id', 'uuid', (col) => col.notNull().references('users.id').onDelete('cascade'))
     .addColumn('refresh_token', 'text')
@@ -17,5 +17,5 @@ export async function up(db: Kysely<any>): Promise<void> {
 }
 
 export async function down(db: Kysely<DB>): Promise<void> {
-  await db.schema.dropTable('spotify_accounts').execute()
+  await db.schema.dropTable('wakatime_accounts').execute()
 }

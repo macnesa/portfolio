@@ -1,6 +1,6 @@
 import { object, string, number, date, array, any, ZodType } from "zod";
 
-export const spotifyAccountSchema = object({
+export const wakatimeAccountSchema = object({
   id: string(),
   user_id: number(),
   refresh_token: string().optional(),

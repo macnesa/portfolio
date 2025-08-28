@@ -7,7 +7,7 @@ import api from "@/lib/api";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"; 
-import { FaSpotify, FaLastfmSquare } from "react-icons/fa";
+import { FaSpotify, FaLastfmSquare, FaCodeBranch } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
  
 
@@ -36,20 +36,24 @@ export default function LoginPage() {
     window.location.assign(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/getLoginLastfm`)
   }
   
+  const wakatimeSignIn = () => {
+    window.location.assign(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/getLoginWakatime`)
+  }
+  
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
       <div className="flex items-center gap-12">
         
         {/* Left - Login Form */}
         <div className="w-full max-w-md bg-white  rounded-2xl border border-gray-200 p-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome back</h2>
-          <p className="text-gray-600 mb-8">
+          <h2 className="hidden text-3xl font-bold text-gray-900 mb-2">Welcome back</h2>
+          <p className="hidden text-gray-600 mb-8">
             Start your journey in seconds. Don’t have an account?{" "}
             <Link href={`/register`} className="hover:underline text-blue-600"> Sign up </Link> 
           </p>
 
           {/* onSubmit={handleSubmit}  */}
-          <div className="space-y-6">
+          <div className="hidden space-y-6">
             <div className="grid gap-2">
               <TextField type="email" label={"Email"} name={'email'} model={model} placeholder="name@gmail.com" />
               <TextField type="password" label={"Password"} name={'password'} model={model} />
@@ -58,14 +62,14 @@ export default function LoginPage() {
           </div>
 
           {/* Divider */}
-          <div className="flex items-center my-6">
+          <div className="hidden flex items-center my-6">
             <div className="flex-1 h-px bg-gray-300" />
             <span className="px-4 text-gray-500 text-sm">or continue with</span>
             <div className="flex-1 h-px bg-gray-300" />
           </div>
 
           {/* Social Logins */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid gap-4">
             <Button onClick={lastFmSignIn} className="flex items-center justify-center gap-2">
               <FaLastfmSquare/>
               Last.fm
@@ -74,6 +78,11 @@ export default function LoginPage() {
             <Button onClick={spotifySignIn} className="flex items-center justify-center gap-2">
               <FaSpotify color="#1DB954"/>
               <span>Spotify</span>
+            </Button>
+            
+            <Button onClick={wakatimeSignIn} className="flex items-center justify-center gap-2">
+              <FaCodeBranch/>
+              <span>Wakatime</span>
             </Button>
             
             

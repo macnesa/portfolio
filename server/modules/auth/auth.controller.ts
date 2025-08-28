@@ -4,12 +4,15 @@ import { BaseController } from '../../core/base.controller'
 import { NoAuth } from '../../decorators/NoAuth';
 import crypto from "crypto";
 import { z } from 'zod'
-import { UserService } from '../spotify/user/user.service';
+import { UserService as UserServiceSpotiy} from '../spotify/user/user.service';
+import { UserService as UserServiceWakatime} from '../wakatime/user/user.service';
 import { db } from '../../db';
 import { buildSig, hashPassword, comparePassword, generateJWT } from '../../utils/auth';
 import jwt from "jsonwebtoken";
 import snakeCase from "lodash/snakeCase";
 import isEmpty from "lodash/isEmpty";
+import isObject from "lodash/isObject";
+
 
 
 export default class authController extends BaseController {
@@ -33,11 +36,14 @@ export default class authController extends BaseController {
     return process.env.CLIENT_URL;
   }
   
-
-  
   private get lastFmCallBack(): string {
     if (!process.env.LASTFM_CALLBACK) throw new Error("Missing LASTFM_CALLBACK in env");
     return process.env.LASTFM_CALLBACK;
+  }
+  
+  private get wakatimeCallBack(): string {
+    if (!process.env.WAKATIME_CALLBACK) throw new Error("Missing WAKATIME_CALLBACK in env");
+    return process.env.WAKATIME_CALLBACK;
   }
   
   
@@ -113,7 +119,6 @@ export default class authController extends BaseController {
     if (!isValid) return this.error(next, 401, "Invalid credentials");
     
     const token = user.id && generateJWT(user.id);
-    console.log("user token", token);
     if(token) this.setUserCookies(res, token); 
     
     this.sendSuccess(res, { desc: 'Sign In Success' })
@@ -171,24 +176,29 @@ export default class authController extends BaseController {
     const savedState = req.cookies.oauthState;
   
     if (!code || !state || state !== savedState) {
-      return this.error(next, 400, "Invalid state or code");
+      return this.error(next, 400, "Authorization code missing");
     }
     const secondCall = await this.secondCall(code);
     const { access_token, refresh_token, expires_in } = secondCall.data;
     
-    const profile = await UserService.getSpotifyProfile(access_token);
+    const profile = await UserServiceSpotiy.getSpotifyProfile(access_token);
+    let check = await db.selectFrom('spotify_accounts').selectAll().where('id', '=', profile.id).executeTakeFirst();
+    let user : any = null;
     
-    let check = await db.selectFrom('spotify_accounts').selectAll().where('spotify_id', '=', profile.id).executeTakeFirst();
-    let user;
+    if(!isEmpty((req as any)?.user)) {
+      user = await db.selectFrom('users').where('id', '=', (req as any).user.id).selectAll().executeTakeFirst();
+    }
     
-    if (!check) {
-      user = await db.insertInto('users').values({
+    if (!check) { 
+      if(!user) {
+        user = await db.insertInto('users').values({
           username: snakeCase(profile.display_name),
-        }).returningAll().executeTakeFirst();
-      if (!isEmpty(user)) {
+        }).returningAll().executeTakeFirst(); 
+      } 
+      if (user) {
         check = await db.insertInto('spotify_accounts').values({
-          user_id: user.id!,
-          spotify_id: profile.id,
+          id: profile.id,
+          user_id: user.id,
           refresh_token,
           access_token,
           expires_in: new Date(Date.now() + expires_in * 1000),
@@ -198,18 +208,17 @@ export default class authController extends BaseController {
       }
     } else {
       check = await db.updateTable('spotify_accounts').set({  
+        refresh_token,
         access_token,
         expires_in: new Date(Date.now() + expires_in * 1000),
         updated_at: new Date()
-      }).where('spotify_id', '=', check.spotify_id).returningAll().executeTakeFirst();
+      }).where('id', '=', check.id).returningAll().executeTakeFirst();
     }
     
-    const id = check?.user_id ?? user?.id;
     
-    const token = generateJWT(id!);
-    console.log("userToken", token);
+    const token = generateJWT(user?.id);
+    this.setUserCookies(res, token); 
     
-    this.setUserCookies(res, token!); 
     // this.setSpotifyCookies(res, access_token, refresh_token, Number(expires_in));
     res.clearCookie("oauthState");
   
@@ -303,8 +312,101 @@ export default class authController extends BaseController {
     res.redirect(this.clientUrl);
   }
   
+  @NoAuth() 
+  async getLoginWakatime(req: Request, res: Response) {
+    const state = this.generateState();
+    const scopes = [
+      "read_stats",
+      "read_summaries",
+      "read_heartbeats",
+      "read_goals",
+      "read_private_leaderboards",
+      "email"
+    ];
+    const scopeParam = encodeURIComponent(scopes.join(" "));
+    const url = `https://wakatime.com/oauth/authorize?client_id=${this.wakatimeId}&response_type=code&redirect_uri=${encodeURIComponent(this.wakatimeCallBack)}&scope=${scopeParam}&state=${state}`;
+    
+    res.cookie("oauthState", state, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 5 * 60 * 1000,
+      path: "/",
+    });
+    
+    res.redirect(url);
+  }
+  
+  @NoAuth() 
+  async getRedirectWakatime(req: Request, res: Response, next: NextFunction) {
+    const code = req.query.code as string;
+    const savedState = req.cookies.oauthState; ///tcdbt
+    
+    if (!code) {
+      return this.error(next, 400, "Authorization code missing");
+    }
+    
+    
+    const { data } = await axios.post(`${this.WAKATIME_AUTH}/token`, {
+      client_id: this.wakatimeId,
+      client_secret: this.wakatimeSecret,
+      redirect_uri: this.wakatimeCallBack,
+      grant_type: 'authorization_code',
+      code,
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+     
+    const { access_token, refresh_token, expires_in } = typeof data === 'object' ? data : Object.fromEntries(new URLSearchParams(String(data)));
+    
+    console.log("koontol", data);
+    
+    
+    const profile = await UserServiceWakatime.getWakatimeProfile(access_token);
+    let check = await db.selectFrom('wakatime_accounts').selectAll().where('id', '=', profile.id).executeTakeFirst();
+    let user : any = null;
+    if(!isEmpty((req as any)?.user)) {
+      user = await db.selectFrom('users').where('id', '=', (req as any).user.id).selectAll().executeTakeFirst();
+    }
+    
+    if (!check) {
+      if(!user) {
+        user = await db.insertInto('users').values({
+          username: snakeCase(profile.display_name),
+        }).returningAll().executeTakeFirst();
+      }
+      if (user) {
+        check = await db.insertInto('wakatime_accounts').values({
+          id: profile.id,
+          user_id: user.id,
+          refresh_token,
+          access_token,
+          expires_in: new Date(Date.now() + expires_in * 1000),
+          display_name: profile.display_name,
+          avatar_url: profile.photo || null,
+        }).returningAll().executeTakeFirst();
+      }
+    } else {
+      check = await db.updateTable('wakatime_accounts').set({  
+        refresh_token,
+        access_token,
+        expires_in: new Date(Date.now() + expires_in * 1000),
+        updated_at: new Date()
+      }).where('id', '=', check.id).returningAll().executeTakeFirst();
+    }
+    
+    const token = generateJWT(user?.id);
+    this.setUserCookies(res, token); 
+
+    res.clearCookie("oauthState");
+  
+    res.redirect(this.clientUrl);
+  }
+  
+  
+  
 }
-
-
 
  

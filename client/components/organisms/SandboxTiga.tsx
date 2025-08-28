@@ -22,7 +22,7 @@ export default function SandboxTiga() {
 
           {/* Center: Navigation */}
           <nav className="flex gap-6 mt-30 justify-start border-t border-neutral-100 pt-5">
-            <Link href="/career" className="text-neutral-400 hover:text-gray-600">about mac</Link>
+            <Link href="/me" className="text-neutral-400 hover:text-gray-600">about mac</Link>
             <Link href="/career" className="text-neutral-400 hover:text-gray-600">career</Link>
             <Link href="#" className="text-neutral-400 hover:text-gray-600">my vision</Link>
             <Link href="#" className="text-neutral-400 hover:text-gray-600">blogs</Link>

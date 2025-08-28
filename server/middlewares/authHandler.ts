@@ -10,10 +10,11 @@ export function authHandler(required: boolean = true) {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req.cookies.accessToken || req.headers['authorization']?.split(' ')[1];
+      
       // more check needed
       if (required && !token) {
         return sendResponse(res, false, 401, 'Access token required');
-      } if (!required || !token) {
+      } if (!token) {
         return next();
       }
       

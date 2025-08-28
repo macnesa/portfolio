@@ -3,6 +3,7 @@ import z from 'zod';
 import { BaseController } from '../../../core/base.controller'
 import { Request, Response, NextFunction } from 'express'; 
 import { buildSig } from '../../../utils/auth';
+import { NoAuth } from '../../../decorators/NoAuth';
 
 export default class userController extends BaseController {
   
