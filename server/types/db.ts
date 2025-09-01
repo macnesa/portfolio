@@ -1,6 +1,8 @@
 import { z } from "zod"
 import { wakatimeAccountSchema } from "../schemas/database/wakatimeAccount.schema"
 import { spotifyAccountSchema } from "../schemas/database/spotifyAccount.schema"
+import { lastfmAccountSchema } from "../schemas/database/lastfmAccountSchema"
+
 import { userSchema } from "../schemas/database/user.schema"
 export interface DB {
   migrations: {
@@ -11,4 +13,5 @@ export interface DB {
   users:  z.infer<typeof userSchema>
   spotify_accounts: z.infer<typeof spotifyAccountSchema>
   wakatime_accounts: z.infer<typeof wakatimeAccountSchema>
+  lastfm_accounts: z.infer<typeof lastfmAccountSchema>
 }

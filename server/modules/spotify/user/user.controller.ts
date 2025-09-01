@@ -15,7 +15,7 @@ export default class userController extends BaseController {
   }
   
   async getMe(req: Request, res: Response, next:NextFunction) {
-    const data = await UserService.getSpotifyProfile((req as any).spotifyAccessToken);
+    const data = await UserService.getProfile((req as any).spotifyAccessToken);
     // tcdbt parse schema !
     this.sendSuccess(res, data)
   }

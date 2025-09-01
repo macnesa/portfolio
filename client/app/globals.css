@@ -7,7 +7,7 @@
 /* @custom-variant dark (&); */
 
 @theme inline {
-  --color-dark: #1F1F1F;
+  --color-dark: #262626;
   --color-light: #f9fafb;
   --color-primary: #2E5077;
   --color-danger: #FF5652;
@@ -16,8 +16,19 @@
   /* --color-dark-darker: ; */
 }
 
+p {
+  display: flex;              /* Gunakan flexbox untuk menjaga semua span dalam satu baris */
+  align-items: baseline;      /* Menjaga baseline yang sama */
+  gap: 1rem;                  /* Optional: Memberikan sedikit jarak antar teks */
+}
+
+.line {
+  opacity: 0;                 /* Mulai dengan opacity 0 untuk animasi */
+  transform: translateY(30px);/* Mulai dari bawah dengan y: 30px */
+}
+
 :root {
-  --tw-font-sans:  ui-sans-serif, system-ui, -apple-system,
+  --tw-font-sans: 'inter', ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans",
     sans-serif;
 }

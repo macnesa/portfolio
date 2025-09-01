@@ -29,7 +29,6 @@ export class BaseController {
   protected get wakatimeSecret(): string {
     if (!process.env.WAKATIME_SECRET) throw new Error("Missing WAKATIME_SECRET in env");
     return process.env.WAKATIME_SECRET;
-    // return Buffer.from(process.env.WAKATIME_SECRET + ':').toString('base64');
   }
   
   /**

@@ -6,6 +6,7 @@ import crypto from "crypto";
 import { z } from 'zod'
 import { UserService as UserServiceSpotiy} from '../spotify/user/user.service';
 import { UserService as UserServiceWakatime} from '../wakatime/user/user.service';
+import { UserService as UserServiceLastfm} from '../lastfm/user/user.service';
 import { db } from '../../db';
 import { buildSig, hashPassword, comparePassword, generateJWT } from '../../utils/auth';
 import jwt from "jsonwebtoken";
@@ -181,7 +182,7 @@ export default class authController extends BaseController {
     const secondCall = await this.secondCall(code);
     const { access_token, refresh_token, expires_in } = secondCall.data;
     
-    const profile = await UserServiceSpotiy.getSpotifyProfile(access_token);
+    const profile = await UserServiceSpotiy.getProfile(access_token);
     let check = await db.selectFrom('spotify_accounts').selectAll().where('id', '=', profile.id).executeTakeFirst();
     let user : any = null;
     
@@ -298,18 +299,51 @@ export default class authController extends BaseController {
       api_key: this.lastFmKey,
       token,
     };
-    
     const api_sig = buildSig(params, this.lastFmSecret);
     const paramsToSend = { ...params, api_sig, format: 'json' };
     
-    const { data } = await axios.get('https://ws.audioscrobbler.com/2.0/', {
+    const { data } = await axios.get(this.LASTFM_API, {
       params: paramsToSend
     });
+    const session = data?.session;
+    if (!session || !session.key || !session.name) {  
+      return this.error(next, 400, "Invalid session data from Last.fm");
+    }
     
-    console.log("last fm session key", data);
+    const profile = await UserServiceLastfm.getProfile(session.key);
+    let check = await db.selectFrom('lastfm_accounts').selectAll().where('id', '=', profile.id).executeTakeFirst();
+    let user : any = null;
     
-
+    if(!isEmpty((req as any)?.user)) {
+      user = await db.selectFrom('users').where('id', '=', (req as any).user.id).selectAll().executeTakeFirst();
+    }
+    
+    if (!check) { 
+      if(!user) {
+        user = await db.insertInto('users').values({
+          username: snakeCase(profile.display_name),
+        }).returningAll().executeTakeFirst(); 
+      } 
+      if (user) {
+        check = await db.insertInto('lastfm_accounts').values({
+          id: profile?.user.name,
+          user_id: user.id,
+          session_key: session.key,
+          display_name: profile?.user.realname,
+          avatar_url: (profile?.user.image || []).find((img: { size: string; ['#text']: string })=> img.size === 'large')?.['#text'] || null,
+        }).returningAll().executeTakeFirst();
+      }
+    } else {
+      check = await db.updateTable('lastfm_accounts').set({  
+        session_key: session.key,
+        updated_at: new Date()
+      }).where('id', '=', check.id).returningAll().executeTakeFirst();
+    }
+    
+    const jwt = generateJWT(user?.id);
+    this.setUserCookies(res, jwt);
     res.redirect(this.clientUrl);
+    // console.log("tavo elay", res.cookie.accessToken);
   }
   
   @NoAuth() 
@@ -361,10 +395,10 @@ export default class authController extends BaseController {
      
     const { access_token, refresh_token, expires_in } = typeof data === 'object' ? data : Object.fromEntries(new URLSearchParams(String(data)));
     
-    console.log("koontol", data);
     
+    const profile = await UserServiceWakatime.getProfile(access_token);
+    console.log("chadash", profile);
     
-    const profile = await UserServiceWakatime.getWakatimeProfile(access_token);
     let check = await db.selectFrom('wakatime_accounts').selectAll().where('id', '=', profile.id).executeTakeFirst();
     let user : any = null;
     if(!isEmpty((req as any)?.user)) {
@@ -405,7 +439,15 @@ export default class authController extends BaseController {
     res.redirect(this.clientUrl);
   }
   
-  
+  @NoAuth()
+  async getInjectCookie(req: Request, res: Response, next: NextFunction) {
+    const user = await db.selectFrom('users').selectAll().executeTakeFirst();
+    if(user?.id) {
+      const token = generateJWT(user.id);
+      this.setUserCookies(res, token); 
+    } 
+    res.redirect(this.clientUrl);
+  }
   
 }
 

@@ -12,14 +12,13 @@ export default class userController extends BaseController {
     this.sendSuccess(res, { desc: "This is the User route" });
   }
   
-  @NoAuth()
   async getAllTimeSinceToday(req: Request,  res: Response, next:NextFunction) {
     const { data } = await axios.get(`${this.WAKATIME_API}/users/current/all_time_since_today`, {
       headers: {  
-        Authorization: `Basic ${this.wakatimeSecret}`,
+        Authorization: `Bearer ${ (req as any)?.wakatimeAccessToken }`,
       },
     });
-    this.sendSuccess(res, data)
+    this.sendSuccess(res, data.data)
   }
   
 } 

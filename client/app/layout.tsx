@@ -30,7 +30,7 @@ export default function RootLayout({ children }: Readonly<{children: React.React
         <link rel="icon" href="https://static.thenounproject.com/png/2470574-200.png" />
       </head>
       {/* bg-dark */}
-      <body className=" min-h-screen bg-white">
+      <body className=" min-h-screen bg-white dark:bg-neutral-900">
         {/* <Header/> */}
         {/* Sidebar fixed */}
         {/* <Sidebar /> */}

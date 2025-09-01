@@ -1,255 +1,123 @@
-import Link from "next/link";
-import { FaMusic, FaLastfm, FaYoutube, FaLinkedinIn, FaGithub, FaDiscord, FaClock, FaBuilding, FaCode, FaCodeBranch } from "react-icons/fa";
-import { HiOutlineEnvelope, HiOutlineMapPin, HiOutlineClock, HiOutlineBuildingOffice2 } from "react-icons/hi2"
+"use client";
 
-export default function Me() {
+import { useEffect, useState } from "react";
+import { motion, easeOut } from "framer-motion";
 
+// Component TypingText yang aman
+const TypingText = ({ text }: { text: string }) => {
+  const [displayed, setDisplayed] = useState<React.ReactNode[]>([]);
 
+  useEffect(() => {
+    let i = 0;
+    let timeout: NodeJS.Timeout;
 
-  const commits = [
-    {
-      message: "Fix bug on login page",
-      repo: "my-project/frontend",
-      time: "2 hours ago",
+    const typeNext = () => {
+      if (i >= text.length) return;
+
+      const char = text[i];
+      setDisplayed(prev =>
+        char === "\n"
+          ? [...prev, <br key={i} />]
+          : [...prev, <span key={i}>{char}</span>]
+      );
+
+      i++;
+      const isSentenceEnd = [".", "!", "?"].includes(char);
+      const delay = isSentenceEnd ? 200 + Math.random() * 300 : 25;
+      timeout = setTimeout(typeNext, delay);
+    };
+
+    typeNext();
+
+    return () => {
+      clearTimeout(timeout);
+      setDisplayed([]); // reset biar nggak double di rerender
+    };
+  }, [text]);
+
+  return <span>{displayed}</span>;
+};
+
+export default function MePage() {
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    setIsReady(true);
+  }, []);
+
+  if (!isReady) return null;
+
+  // Variants untuk Framer Motion
+  const pageVariants = {
+    hidden: { opacity: 0, scale: 1, filter: "blur(6px)" },
+    show: { opacity: 1, scale: 1, filter: "blur(0px)", transition: { duration: 0.7 } },
+  };
+
+  const contentParent = {
+    hidden: { opacity: 0, y: 10 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { staggerChildren: 0.2, delayChildren: 0.3 },
     },
-    {
-      message: "Add unit tests for user service",
-      repo: "my-project/backend",
-      time: "1 day ago",
-    },
-    {
-      message: "Update README.md",
-      repo: "my-project",
-      time: "3 days ago",
-    },
+  };
+
+  const contentItem = {
+    hidden: { opacity: 0, y: 10 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: easeOut } },
+  };
+
+  const paragraphs = [
+    `HELLO THERE 👋 you can call me mac. Ever since high school, I’ve been fascinated by breaking down complex problems, always curious to understand how things really work.\n\nI started with design, messing around in Photoshop, creating visuals, experimenting with colors and shapes. Then I wanted more than static images, I wanted them to move and feel alive, so I dove into programming.\n\nCoding became my way to bring ideas to life, not just to work, but to feel alive, smooth and precise. I love thinking about complex systems, analyzing, breaking things apart, and putting them back together until everything makes sense.\n\nAfter high school, I joined a healthtech startup in Jakarta as a full stack developer. That’s where I really learned how a team works under pressure, juggling deadlines, dealing with real users, and building products that actually matter. I figured out how companies operate, how to prioritize tasks, handle feedback, and push features live without losing sanity.\n\nOutside of code, I enjoy swimming and diving into new music—things that keep my head clear and my perspective wide.\n\nThat’s me in short. The rest, maybe, we can figure out together.`,
   ];
 
   return (
-    <section className="min-h-screen grid grid-cols-1 md:grid-cols-[0.3fr_1fr] bg-white text-gray-900">
+    <motion.section
+      initial="hidden"
+      animate="show"
+      variants={pageVariants}
+      className="min-h-screen grid grid-cols-1 md:grid-cols-[0.5fr_0.5fr] text-neutral-900 dark:text-neutral-100 bg-white dark:bg-neutral-900 transition-colors duration-300"
+    >
+      {/* Left - Image */}
+      <motion.div
+        initial={{ opacity: 0, scale: 1.05 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1.2, ease: "easeOut" }}
+        className="relative w-full h-64 md:h-auto overflow-hidden"
+      >
+        <motion.div
+          whileHover={{ scale: 1.03 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="w-full h-full"
+        >
+           <motion.img
+            src="https://i.imgur.com/BkM66XQ.jpeg"
+            alt="macnesa's profile image"
+            className="h-full w-full object-cover opacity-25"
+            loading="lazy"
+            whileHover={{ scale: 1.03 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          /> 
+          
+        </motion.div>
+      </motion.div>
 
-      {/* Left - Fixed Width Image */}
-      <div className="w-full h-full">
-        <img
-          className="w-full h-full object-cover  brightness-90"
-          src="https://images.unsplash.com/photo-1579783901586-d88db74b4fe4?q=80&w=1348&auto=format&fit=crop"
-          alt="portrait"
-        />
-      </div>
-
-      {/* Right - Text Content */}
-      <div className="px-8  border-red-400 md:px-10  py-10 animate-fade-in space-y-5">
-
-        <div className="border border-neutral-200 rounded-md p-5 md:p-10 flex flex-col justify-center space-y-2">
-
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-snug">
-            hi 👋 call me <span className="italic text-gray-500">mac</span>.
-          </h1>
-
-          <p className="text-sm text-gray-600 leading-relaxed">
-            i like quiet mornings, good music, long walks, and figuring out how things work.
-            <br />
-            sometimes i write. sometimes i build things. often, i overthink. but mostly, i try to stay curious.
-            <br />
-            i believe in slow growth, deep work, and surrounding yourself with people who make you feel at home.
-            <br /><br />
-            if you're here, thanks for stopping by. really.
-          </p>
-
-        </div>
-
-        <div className="grid grid-cols-[max-content_1fr] gap-10">
-
-
-          <div className="h-max grid grid-cols-1 gap-4 w-fit text-sm   boder-black px-5 py-5 text-gray-800">
-            {/* office */}
-            <div className="flex items-center gap-3 group">
-              <HiOutlineBuildingOffice2 className="text-lg " />
-              <a
-                href="https://zicare.id"
-                className="group-hover:underline font-semibold"
-              >
-                @zicare
-              </a>
-            </div>
-
-            {/* Location */}
-            <div className="flex items-center gap-3">
-              <HiOutlineMapPin className="text-lg" />
-              <span>Jakarta, Indonesia</span>
-            </div>
-
-            {/* Email */}
-            <div className="flex items-center gap-3 group">
-              <HiOutlineEnvelope className="text-lg " />
-              <a
-                href="mailto:your.email@example.com"
-                className="group-hover:underline group-hover:text-blue-500"
-              >
-                mmacnesa@gmail.com
-              </a>
-            </div>
-
-            {/* Discord */}
-            <div className="flex items-center gap-3 group">
-              <HiOutlineClock className="text-lg " />
-              <a
-                href="https://github.com/yourusername"
-                target="_blank"
-                className="group-hover:underline group-hover:text-blue-500"
-              >
-                13.42 <span className="text-gray-500"> - 5h behind</span>
-              </a>
-            </div>
-
-            {/* YouTube */}
-            <div className="flex items-center gap-3 group">
-              <FaYoutube className="text-lg " />
-              <a
-                href="https://youtube.com/yourchannel"
-                target="_blank"
-                className="group-hover:underline group-hover:text-blue-500"
-              >
-                bangcurious
-              </a>
-            </div>
-
-            {/* LinkedIn */}
-            <div className="flex items-center gap-3 group">
-              <FaLinkedinIn className="text-lg " />
-              <a
-                href="https://linkedin.com/in/yourprofile"
-                target="_blank"
-                className="group-hover:underline group-hover:text-blue-500"
-              >
-                Lintang Macnesa
-              </a>
-            </div>
-
-            {/* GitHub */}
-            <div className="flex items-center gap-3 group">
-              <FaGithub className="text-lg " />
-              <a
-                href="https://github.com/yourusername"
-                target="_blank"
-                className="group-hover:underline group-hover:text-blue-500"
-              >
-                @macnesa
-              </a>
-            </div>
-
-
-
-          </div>
-
-
-
-
-
-          <div className="px-5 py-5 grid  content-start justify-start gap-4 border border-gray-200 rounded-xl">
-
-
-
-            <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white rounded-lg w-60 h-40 py-5 px-4 shadow-sm flex flex-col items-center justify-center">
-              <div className="flex items-center space-x-2 text-sm text-blue-300">
-                <FaCode size={14} />
-                <span className="uppercase text-xs font-semibold tracking-widest opacity-80">Total Coding Time</span>
-              </div>
-
-              <div className="text-center">
-                <p className="text-3xl font-bold tracking-tight">3.020 hrs</p>
-                {/* <p className="text-sm font-medium text-blue-200">25 minutes</p> */}
-              </div>
-
-              <p className="text-[10px] text-blue-400 mt-1">
-                Source:{" "}
-                <a
-                  href="https://wakatime.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline hover:text-blue-300"
-                >
-                  WakaTime
-                </a>
-              </p>
-            </div>
-
-
-
-            <div className="w-72 h-40 rounded-lg px-6 py-4 bg-gradient-to-r from-[#ff4c4c] to-[#d51007] text-white shadow-lg flex items-center space-x-5">
-
-              {/* Icon */}
-              <div className="flex-shrink-0">
-                <FaLastfm size={28} />
-              </div>
-
-              {/* Text Container */}
-              <div className="flex flex-col">
-                <span className="uppercase text-xs font-semibold tracking-widest opacity-80">
-                  Total Scrobbling
-                </span>
-                <span className="text-3xl font-extrabold leading-none drop-shadow-md">
-                  37,083 times
-                </span>
-                {/* <span className="text-sm font-medium opacity-90 -mt-1">
-                  5 minutes
-                </span> */}
-
-                <p className="text-[10px] opacity-75 mt-2">
-                  Source:{" "}
-                  <a
-                    href="https://wakatime.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline hover:text-blue-300"
-                  >
-                    Last.fm
-                  </a>
-                </p>
-              </div>
-            </div>
-
-
-            <div className="hidden w-80 bg-white p-5 rounded-lg  font-sans text-gray-900">
-              <h2 className="text-lg font-semibold mb-6 border-b border-gray-200 pb-2">
-                GitHub Commit Timeline
-              </h2>
-
-              <div className="relative ml-4">
-                {/* Garis vertikal timeline */}
-                <div className="absolute left-2 top-0 w-0.5 h-full bg-gray-300"></div>
-
-                <ul className="space-y-8">
-                  {commits.map(({ message, repo, time }, idx) => (
-                    <li key={idx} className="flex items-start space-x-4 relative">
-                      {/* Titik timeline */}
-                      <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full bg-blue-500 border-2 border-white shadow"></div>
-
-                      {/* Icon commit */}
-                      <FaCodeBranch className="mt-1 text-blue-500" size={18} />
-
-                      {/* Info commit */}
-                      <div>
-                        <p className="font-medium">{message}</p>
-                        <p className="text-xs text-gray-400">{repo}</p>
-                        <p className="text-xs text-gray-400">{time}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-
-          </div>
-
-
-        </div>
-
-
-      </div>
-
-
-    </section>
-
+      {/* Right - Content */}
+      <motion.div
+        className="px-6 md:px-10 py-10 space-y-6"
+        variants={contentParent}
+      >
+        {/* <p className="text-base italic font-light dark:text-neutral-500">who's behind the keyboard</p> */}
+        {paragraphs.map((p, idx) => (
+          <motion.p
+            key={idx}
+            className="font-[fira_code] text-sm md:text-base border-l border-neutral-700 pl-4 text-neutral-600 dark:text-neutral-300 leading-relaxed"
+            variants={contentItem}
+          >
+            <TypingText text={p} />
+          </motion.p>
+        ))}
+      </motion.div>
+    </motion.section>
   );
 }

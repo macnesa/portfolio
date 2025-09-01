@@ -3,7 +3,7 @@ import { SPOTIFY_API_BASE_URL, SPOTIFY_AUTH_BASE_URL } from "../../../constants/
 
 
 export class UserService {
-  static async getSpotifyProfile(access_token: string) {
+  static async getProfile(access_token: string) {
     try {
       let url = `${SPOTIFY_API_BASE_URL}/me`; 
       const { data } = await axios.get(url, {
