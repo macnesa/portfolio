@@ -38,6 +38,7 @@ export class Route {
 
     // Cari semua controller file (bisa nested)
     const controllerFiles = Route.findControllerFiles(Route.modulesPath);
+    console.log("rachamim", controllerFiles);
 
     controllerFiles.forEach((controllerFilePath) => {
       // Dapatkan base route dari folder relatif controller file
@@ -89,7 +90,6 @@ export class Route {
         }
         if (type) {
           console.log("der ganze velt", route);
-          
           const requireToken: boolean = Reflect.getMetadata('requireToken', controllerInstance, method) ?? true;
           router[type](route, authHandler(requireToken), catchAsync(controllerInstance[method].bind(controllerInstance)));
         } else {
