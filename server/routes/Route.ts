@@ -88,6 +88,8 @@ export class Route {
           route += `/${method}`;
         }
         if (type) {
+          console.log("der ganze velt", route);
+          
           const requireToken: boolean = Reflect.getMetadata('requireToken', controllerInstance, method) ?? true;
           router[type](route, authHandler(requireToken), catchAsync(controllerInstance[method].bind(controllerInstance)));
         } else {
