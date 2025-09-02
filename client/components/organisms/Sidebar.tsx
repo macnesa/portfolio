@@ -21,7 +21,7 @@ export default function Sidebar() {
         <ul className="space-y-2 rounded-lg">
           <li>
             <Link href="/" className="flex mt-8 items-center p-2 text-xs transition duration-75 font-normal rounded-lg text-gray-800 dark:text-unfocus-500 dark:hover:text-white">
-              {/* @ts-ignore */}
+              {/* @ts-expect-error */}
               <ion-icon aria-hidden="true" class="w-4 h-4" name="home-outline"></ion-icon>
               <span className="ml-3">Home</span>
             </Link>
@@ -29,7 +29,7 @@ export default function Sidebar() {
 
           <li>
             <Link href="/search" className="flex items-center p-2 text-xs transition duration-75 font-normal rounded-lg text-gray-800 dark:text-unfocus-500 dark:hover:text-white">
-              {/* @ts-ignore */}
+              {/* @ts-expect-error */}
               <ion-icon aria-hidden="true" class="w-4 h-4" name="search-outline"></ion-icon>
               <span className="ml-3">Search</span>
             </Link>

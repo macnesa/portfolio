@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, cubicBezier } from "framer-motion";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -10,7 +10,7 @@ const pageTransitionVariants = {
     x: -50,  // geser ke kiri atas, bisa disesuaikan
     y: -30,
     filter: "blur(8px) saturate(40%)",
-    transition: { duration: 0.7, ease: [0.65, 0, 0.35, 1] },
+    transition: { duration: 0.7, ease: cubicBezier(0.65, 0, 0.35, 1) },
   },
   enter: {
     scale: 1,
@@ -18,7 +18,7 @@ const pageTransitionVariants = {
     x: 0,
     y: 0,
     filter: "blur(0px) saturate(100%)",
-    transition: { duration: 0.7, ease: [0.65, 0, 0.35, 1] },
+    transition: { duration: 0.7, ease: cubicBezier(0.65, 0, 0.35, 1) },
   },
 };
 

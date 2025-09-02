@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, easeOut } from "framer-motion";
+
 
 // Komponen typing per paragraf, delay per titik dan mendukung \n
-export const TypingText = ({ text }: { text: string }) => {
+const TypingText = ({ text }: { text: string }) => {
   const [displayed, setDisplayed] = useState<React.ReactNode[]>([]);
 
   useEffect(() => {
@@ -52,7 +53,7 @@ export default function MeBioTyping() {
 
   const contentItem = {
     hidden: { opacity: 0, y: 15 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+    show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: easeOut } },
   };
 
   return (

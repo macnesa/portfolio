@@ -31,8 +31,8 @@ export default function AlbumPage({ params }: { params: Promise<{ id: string }> 
   };
   
   const msToTimeFormat = (milliseconds: number) => {
-    var minutes = Math.floor(milliseconds / (1000 * 60));
-    var seconds = Math.floor((milliseconds % (1000 * 60)) / 1000);
+    const minutes = Math.floor(milliseconds / (1000 * 60));
+    const seconds = Math.floor((milliseconds % (1000 * 60)) / 1000);
     return minutes + ":" + (seconds < 10 ? "0" + seconds : seconds);
   }
   
@@ -97,7 +97,7 @@ export default function AlbumPage({ params }: { params: Promise<{ id: string }> 
       <section className=" h-auto p-8 min-h-[24rem] w-full box-border overflow-hidden shadow-2xl border-red-200 grid lg:grid-flow-col lg:grid-cols-[max-content_1fr] bg-center bg-no-repeat bg-cover">
         <div className="grid items-center self-end">
           <div style={{boxShadow: "-1px -1px 30px -9px rgba(0,0,0,1)"}} className="w-[20rem] h-[20rem] border-l-blue-200 ">
-            <img ref={imgRef}  src={album.images[0].url} onLoad={handleImageLoad} className="w-[100%] h-[100%]"  crossOrigin="anonymous"/>
+            <img ref={imgRef} alt='album cover' src={album.images[0].url} onLoad={handleImageLoad} className="w-[100%] h-[100%]"  crossOrigin="anonymous"/>
           </div>
         </div>
         <div className="border-l-fuchsia-600 flex flex-col justify-end lg:px-4">

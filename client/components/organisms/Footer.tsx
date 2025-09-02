@@ -1,5 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 import { FaLinkedin } from "react-icons/fa";
 import { SiGithub, SiLinkedin, SiGmail } from "react-icons/si";
@@ -35,9 +36,9 @@ export default function Footer() {
           viewport={{ once: true }}
           className="md:flex md:items-center md:justify-between"
         >
-          <a href="/" className="text-2xl font-bold tracking-tight dark:text-white">
+          <Link href="/" className="text-2xl font-bold tracking-tight dark:text-white">
             macnesa
-          </a>
+          </Link>
 
           {/* Nav links */}
           <div className="mt-6 grid grid-cols-2 gap-8 sm:grid-cols-2 md:mt-0">
@@ -46,8 +47,8 @@ export default function Footer() {
                 Pages
               </h2>
               <ul className="space-y-2 text-sm text-neutral-600 dark:text-neutral-400">
-                <li><a href="/" className="relative group">Home<span className="absolute bottom-0 left-0 h-[1px] w-0 bg-current transition-all group-hover:w-full"></span></a></li>
-                <li><a href="/me" className="relative group">About<span className="absolute bottom-0 left-0 h-[1px] w-0 bg-current transition-all group-hover:w-full"></span></a></li>
+                <li><Link href="/" className="relative group">Home<span className="absolute bottom-0 left-0 h-[1px] w-0 bg-current transition-all group-hover:w-full"></span></Link></li>
+                <li><Link href="/me" className="relative group">About<span className="absolute bottom-0 left-0 h-[1px] w-0 bg-current transition-all group-hover:w-full"></span></Link></li>
               </ul>
             </div>
 

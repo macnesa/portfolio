@@ -8,7 +8,7 @@ export const CodingTime: React.FC = () => {
 
   useEffect(() => {
     if (!data) fetch();
-  }, [data]); 
+  }, [data, fetch]); 
   
   function formatWakatime(totalSeconds: number) {
     const totalMinutes = Math.floor(totalSeconds / 60);

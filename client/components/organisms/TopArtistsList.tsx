@@ -11,7 +11,7 @@ export default function TopArtistsList() {
 
   useEffect(() => {
     if (!data) fetch();
-  }, [data]);
+  }, [data, fetch]);
   
   if (loading || isEmpty(data) || isEmpty(data?.items) ) return <></>;
   

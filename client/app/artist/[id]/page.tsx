@@ -21,17 +21,17 @@ export default function ArtistPage({ params }: { params: Promise<{ id: string }>
   useEffect(() => {
     setIdA(id);
      fetchA();
-  }, [id]);
+  }, [id, fetchA]);
   
   useEffect(() => {
     setIdB(id);
     fetchB();
-  }, [id]);
+  }, [id, fetchB]);
   
   useEffect(() => {
     setIdC(id);
     fetchC();
-  }, [id]);
+  }, [id, fetchC]);
   
   console.log(albums);
   
@@ -83,7 +83,7 @@ export default function ArtistPage({ params }: { params: Promise<{ id: string }>
           // onDoubleClick={() => playMusic(each.track)} ${isPreviewAvailable(each.track)}
           <button key={index} className={` teer border-[rgba(222,222,222,0.1)] border-t hover:bg-[rgba(222,222,222,0.1)] hover:text-white text-unfocus-500  mx-2 focus:bg-[rgba(222,222,222,0.3)] cursor-pointer`}>
             <div className="px-3 py-2 flex border-white">
-              <img src={each.album.images[1]?.url} className="rounded-sm" width={40} height={40} alt="" />
+              <img alt='cover album' src={each.album.images[1]?.url} className="rounded-sm" width={40} height={40} />
               <div className="ml-4 p-0 flex flex-col text-start border-white justify-center truncate">
                 <Text className="text-sm flex  border-red-300"> {each.name} </Text>
                 <span className="text-[rgba(255,255,255,0.5)] text-xs border-red-300"> 
@@ -107,7 +107,7 @@ export default function ArtistPage({ params }: { params: Promise<{ id: string }>
           <div key={index} className="rounded-md mb-4 border-csd grid text-unfocus-500 hover:brightness-[.9] cursor-default">
             
             <div className="border-green-400 w-full rounded-md overflow-hidden">
-              <img width={'100%'} src={each.images[0]?.url}/>
+              <img alt='cover album' width={'100%'} src={each.images[0]?.url}/>
             </div>
             
             <Text className="text-[rgba(255,255,255,0.8)]  text-xs mt-2"> { each.name } </Text>
@@ -131,7 +131,7 @@ export default function ArtistPage({ params }: { params: Promise<{ id: string }>
           <div key={index} className="rounded-md mb-4 border-csd grid text-unfocus-500 hover:brightness-[.9] cursor-default">
             
             <div className="border-green-400 w-full rounded-md overflow-hidden">
-              <img width={'100%'} src={each.images[0]?.url}/>
+              <img alt='cover album' width={'100%'} src={each.images[0]?.url}/>
             </div>
             
             <Text className="text-[rgba(255,255,255,0.8)]  text-xs mt-2"> { each.name } </Text>

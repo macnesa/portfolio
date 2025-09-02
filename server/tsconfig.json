@@ -6,6 +6,9 @@
     "rootDir": "./",
     "strict": true,
     "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "sourceMap": false,
     "forceConsistentCasingInFileNames": true
   },
 }

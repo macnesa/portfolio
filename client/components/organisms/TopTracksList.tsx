@@ -36,9 +36,9 @@ export default function TopTracksList() {
           <p style={{color: "rgba(255, 255, 255, 0.666)"}} className="text-sm  font-sans font-normal">Featuring {topThree}, and more</p>
           
           <div className="text-sm font-semibold text-white flex items-center hidden">
-            <img className="w-6 h-6 mr-2" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/1024px-Spotify_logo_without_text.svg.png"/>
+            <img alt="logo" className="w-6 h-6 mr-2" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/1024px-Spotify_logo_without_text.svg.png"/>
             <span>Spotify</span>
-            {/* @ts-ignore */}
+            {/* @ts-expect-error */}
             <ion-icon className="w-1 h-1 mx-1" name="ellipse" />
             <span className="font-normal">{items.length} Songs</span>
             <p style={{background: "rgba(255, 255, 255, 0.666)", color: "black"}} className="text-[0.6rem] border-white px-1 py-[1px] font-semibold ml-2 font-sans rounded-sm">PREVIEW</p>

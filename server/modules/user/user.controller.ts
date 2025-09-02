@@ -22,7 +22,7 @@ export default class userController extends BaseController {
     
     const [me, spotify_accounts] = await Promise.all([
       db.selectFrom('users').select(['username','id']) .where('id', '=', user.id).executeTakeFirst(),
-      db.selectFrom('spotify_accounts').select(['spotify_id','avatar_url', 'display_name']) .where('user_id', '=', user.id).executeTakeFirst(),
+      db.selectFrom('spotify_accounts').select(['id','avatar_url', 'display_name']) .where('user_id', '=', user.id).executeTakeFirst(),
     ]);
      
     this.sendSuccess(res, {...me, spotify_accounts : spotify_accounts ?? null})

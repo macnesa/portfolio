@@ -18,11 +18,11 @@ export default function Home() {
   
   useEffect(() => {
     if (!data) fetch();
-  }, [data]);
+  }, [data, fetch]);
   
   useEffect(() => {
     if (!topTracks) fetchB();
-  }, [data]);
+  }, [topTracks, fetchB]);
   
   if (loading || isEmpty(data) || isEmpty(topTracks)) return null;
   
