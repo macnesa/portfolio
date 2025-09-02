@@ -3,25 +3,14 @@ import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { FlatCompat } from "@eslint/eslintrc";
 
-// aman buat environment ESM (lokal & serverless)
-let __dirnameSafe;
-try {
-  const __filename = fileURLToPath(import.meta.url);
-  __dirnameSafe = dirname(__filename);
-} catch (err) {
-  // fallback jika __dirname tidak tersedia (misal serverless)
-  __dirnameSafe = undefined;
-}
+const baseDir = dirname(fileURLToPath(import.meta.url));
 
 const compat = new FlatCompat({
-  baseDirectory: __dirnameSafe,
+  baseDirectory: baseDir,
 });
 
 const eslintConfig = [
-  // extends Next.js default
   ...compat.extends("next/core-web-vitals", "next/typescript"),
-
-  // custom rules
   {
     rules: {
       "@typescript-eslint/no-unused-vars": "off",     // disable warning unused vars
