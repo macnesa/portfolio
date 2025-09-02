@@ -22,7 +22,7 @@ export class Di {
       .filter(o => fs.statSync(path.join(modulePath, o)).isFile())
       .forEach(v => {
         const file = path.join(modulePath, v);
-        const type = Object.keys(dependency).find(key => new RegExp(`\\.${key}\\.ts$`).test(v)) as keyof Dependency;
+        const type = Object.keys(dependency).find(key => new RegExp(`\\.${key}\\.(ts|js)$`).test(v)) as keyof Dependency;
         if (type) {
           dependency[type] = file
         }

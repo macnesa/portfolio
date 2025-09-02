@@ -22,7 +22,7 @@ export class Route {
       const stat = fs.statSync(fullPath);
       if (stat.isDirectory()) {
         results = results.concat(Route.findControllerFiles(fullPath));
-      } else if (/\.controller\.ts$/.test(fileOrDir)) {
+      } else if (/\.controller\.(ts|js)$/.test(fileOrDir)) {
         results.push(fullPath);
       }
     });
