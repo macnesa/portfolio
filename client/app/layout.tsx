@@ -8,6 +8,7 @@ import Script from "next/script";
 import Header from "@/components/organisms/Header";
 import Footer from "@/components/organisms/Footer";
 
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -35,8 +36,8 @@ export default function RootLayout({ children }: Readonly<{children: React.React
         {/* Sidebar fixed */}
         {/* <Sidebar /> */}
         
-        <main className=" flex justify-center">
-          <div className="w-full max-w-[1500px]  ">
+        <main className="flex justify-center border-red-300 min-h-screen">
+          <div className="w-full max-w-[1600px]  ">
             <RouteGuard>
               {children}
             </RouteGuard>

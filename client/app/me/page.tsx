@@ -2,11 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { motion, easeOut } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 // Component TypingText yang aman
 const TypingText = ({ text }: { text: string }) => {
   const [displayed, setDisplayed] = useState<React.ReactNode[]>([]);
+  const pathname = usePathname();
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [pathname]);
+  
   useEffect(() => {
     let i = 0;
     let timeout: NodeJS.Timeout;

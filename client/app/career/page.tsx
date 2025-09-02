@@ -15,6 +15,8 @@ import "swiper/css";
 import { CodingTime } from "@/components/molecules/CodingTime";
 import { ScrobbleTime } from "@/components/molecules/ScrobbleTime";
 import { useInView } from "react-intersection-observer";
+import { usePathname } from "next/navigation";
+
 
 export default function Career() {
   // ---------- DATA ----------
@@ -54,6 +56,8 @@ export default function Career() {
   const [selectedImg, setSelectedImg] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperClass | null>(null);
+  const pathname = usePathname();
+  
 
   // ---------- ANIMASI ----------
   const controls = useAnimation();
@@ -79,6 +83,10 @@ export default function Career() {
   useEffect(() => {
     if (inView2) controls2.start({ opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.8, delay: 0.6 } });
   }, [controls2, inView2]);
+  
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [pathname]);
 
   // ---------- MODAL ----------
   const openModal = (img: string) => {

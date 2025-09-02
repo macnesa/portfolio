@@ -3,18 +3,25 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Typewriter from "typewriter-effect";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, easeOut, cubicBezier } from "framer-motion";
 import { TransitionLink } from "./TransitionLink";
+import { usePathname } from "next/navigation";
+
 
 export default function SandboxTiga() {
   const router = useRouter();
   const [isReady, setIsReady] = useState(false);
   const [animating, setAnimating] = useState(false);
   const [targetHref, setTargetHref] = useState<string | null>(null);
+  const pathname = usePathname();
+
 
   useEffect(() => {
     setIsReady(true);
   }, []);
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [pathname]);
 
   if (!isReady) return null;
 
@@ -36,19 +43,25 @@ export default function SandboxTiga() {
     show: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.6, ease: "easeOut" },
+      transition: { duration: 0.6, ease: easeOut },
     },
   };
 
   const pageVariants = {
-    initial: { scale: 1, opacity: 1, x: 0, y: 0, filter: "blur(0px) saturate(100%)" },
+    initial: {
+      scale: 1,
+      opacity: 1,
+      x: 0,
+      y: 0,
+      filter: "blur(0px) saturate(100%)",
+    },
     exit: {
       scale: 0.95,
       opacity: 0,
       x: -50,
       y: -30,
       filter: "blur(8px) saturate(40%)",
-      transition: { duration: 0.9, ease: [0.65, 0, 0.35, 1] },
+      transition: { duration: 0.9, ease: cubicBezier(0.65, 0, 0.35, 1) },
     },
     enter: {
       scale: 1,
@@ -56,7 +69,7 @@ export default function SandboxTiga() {
       x: 0,
       y: 0,
       filter: "blur(0px) saturate(100%)",
-      transition: { duration: 0.7, ease: [0.65, 0, 0.35, 1] },
+      transition: { duration: 0.7, ease: cubicBezier(0.65, 0, 0.35, 1) },
     },
   };
 
@@ -133,8 +146,6 @@ export default function SandboxTiga() {
             {[
               { href: "/me", label: "about me" },
               { href: "/career", label: "portfolio" },
-              { href: "#", label: "vision" },
-              { href: "#", label: "blog" },
             ].map((link, idx) => (
               <motion.div key={idx} variants={navItem}>
                 <button
