@@ -10,7 +10,7 @@ export const db = new Kysely<DB>({
       user: process.env.PGUSER,
       password: process.env.PGPASSWORD,
       database: process.env.PGDATABASE,
-      ssl: { rejectUnauthorized: false },
+      ssl: process.env.NODE_ENV !== "production" ? false : { rejectUnauthorized: false },
     }),
   }),
 })
