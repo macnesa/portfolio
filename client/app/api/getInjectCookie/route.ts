@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
+  const redirectTo = req.nextUrl.searchParams.get("redirectTo") || "/";
+  
   const response = await fetch(`${process.env.SERVER_URL}/auth/getInjectCookie`, {
     method: "GET",
     credentials: "include",
@@ -8,11 +10,8 @@ export async function GET(req: NextRequest) {
   const data = await response.json();
 
   const token = data.data.token;
-  const redirectTo = data.redirectTo || "/";
 
-  const url = new URL(redirectTo, req.url); 
-  
-  const res = NextResponse.redirect(url);
+  const res = NextResponse.redirect(redirectTo);
   if (token) {
     res.cookies.set("accessToken", token, {
       httpOnly: true,

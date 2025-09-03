@@ -405,9 +405,13 @@ export default class authController extends BaseController {
   @NoAuth()
   async getInjectCookie(req: Request, res: Response, next: NextFunction) {
     const user = await db.selectFrom('users').selectAll().executeTakeFirst(); 
-    this.sendSuccess(res, { token: user?.id ? generateJWT(user.id) : null })
+    if(user?.id) {
+      const token = generateJWT(user.id);
+      this.setUserCookies(res, token); 
+      return this.sendSuccess(res, { token })
+    }
+    this.sendSuccess(res, { token: null })
   }
-  
 }
 
  
