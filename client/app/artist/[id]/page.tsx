@@ -33,7 +33,6 @@ export default function ArtistPage({ params }: { params: Promise<{ id: string }>
     fetchC();
   }, [id, fetchC]);
   
-  console.log(albums);
   
   const typeAlbum = useMemo(() => { 
     if (isEmpty(albums)) return null;

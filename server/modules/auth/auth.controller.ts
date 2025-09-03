@@ -15,7 +15,6 @@ import isEmpty from "lodash/isEmpty";
 import isObject from "lodash/isObject";
 
 
-
 export default class authController extends BaseController {
   private get clientId(): string {
     if (!process.env.CLIENT_ID) throw new Error("Missing CLIENT_ID in env");
@@ -57,6 +56,7 @@ export default class authController extends BaseController {
     super();
   }
   
+  @NoAuth()
   async index(req: Request,  res: Response, next:NextFunction) {
     this.sendSuccess(res, { desc: "This is the Auth route" });
   }
@@ -64,47 +64,12 @@ export default class authController extends BaseController {
   generateState(length = 16) {
     return crypto.randomBytes(length).toString("hex");
   }
-  
-  setSpotifyCookies(res: Response, accessToken: string, refreshToken: string, expiresInSec: number) {
-    const maxAgeAccess = expiresInSec * 1000; // ms
-    const maxAgeRefresh = 30 * 24 * 60 * 60 * 1000; // 30 hari
-    
-    /** 
-     * @be_careful_of_production_cross_origin !!
-    */
-    res.cookie("accessTokenSpotify", accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: maxAgeAccess,
-      path: "/",
-    });
-    // res.cookie("accessTokenExpiry", (Date.now() + maxAgeAccess).toString(), {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === "production",
-    //   sameSite: "strict",
-    //   maxAge: maxAgeAccess,
-    //   path: "/",
-    // });
-    // if (refreshToken) {
-    //   res.cookie("refreshToken", refreshToken, {
-    //     httpOnly: true,
-    //     secure: process.env.NODE_ENV === "production",
-    //     sameSite: "strict",
-    //     maxAge: maxAgeRefresh,
-    //     path: "/auth",
-    //   });
-    // }
-  } 
-  
-  /** 
-   * @be_careful_of_production_cross_origin !!
-  */
+   
   setUserCookies(res: Response, accessToken: string | number) {
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: (process.env.SAME_SITE as any) || "strict",
       maxAge: 1000 * 60 * 60 * 24, // 1 day
       path: "/",
     });
@@ -153,7 +118,7 @@ export default class authController extends BaseController {
     res.cookie("oauthState", state, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: (process.env.SAME_SITE as any) || "strict",
       maxAge: 5 * 60 * 1000, // 5 menit
       path: "/",
     });
@@ -343,7 +308,6 @@ export default class authController extends BaseController {
     const jwt = generateJWT(user?.id);
     this.setUserCookies(res, jwt);
     res.redirect(this.clientUrl);
-    // console.log("tavo elay", res.cookie.accessToken);
   }
   
   @NoAuth() 
@@ -363,7 +327,7 @@ export default class authController extends BaseController {
     res.cookie("oauthState", state, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: (process.env.SAME_SITE as any) || "strict",
       maxAge: 5 * 60 * 1000,
       path: "/",
     });
@@ -397,7 +361,6 @@ export default class authController extends BaseController {
     
     
     const profile = await UserServiceWakatime.getProfile(access_token);
-    console.log("chadash", profile);
     
     let check = await db.selectFrom('wakatime_accounts').selectAll().where('id', '=', profile.id).executeTakeFirst();
     let user : any = null;

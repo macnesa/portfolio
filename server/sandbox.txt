@@ -1,0 +1,33 @@
+setSpotifyCookies(res: Response, accessToken: string, refreshToken: string, expiresInSec: number) {
+    const maxAgeAccess = expiresInSec * 1000; // ms
+    const maxAgeRefresh = 30 * 24 * 60 * 60 * 1000; // 30 hari
+    
+    /** 
+     * @be_careful_of_production_cross_origin !!
+    */
+    res.cookie("accessTokenSpotify", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: maxAgeAccess,
+      path: "/",
+    });
+    // res.cookie("accessTokenExpiry", (Date.now() + maxAgeAccess).toString(), {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production",
+    //   sameSite: "strict",
+    //   maxAge: maxAgeAccess,
+    //   path: "/",
+    // });
+    // if (refreshToken) {
+    //   res.cookie("refreshToken", refreshToken, {
+    //     httpOnly: true,
+    //     secure: process.env.NODE_ENV === "production",
+    //     sameSite: "strict",
+    //     maxAge: maxAgeRefresh,
+    //     path: "/auth",
+    //   });
+    // }
+  } 
+  
+  
