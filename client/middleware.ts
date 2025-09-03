@@ -8,6 +8,7 @@ export function middleware(req: NextRequest) {
 
   const acceptHeader = req.headers.get("accept") || "";
   if (!acceptHeader.includes("text/html")) return NextResponse.next();
+  if (req.nextUrl.pathname.startsWith("/api")) return NextResponse.next();
 
   const token = req.cookies.get("accessToken")?.value;
   console.log("galgalim", token);
@@ -22,8 +23,10 @@ export function middleware(req: NextRequest) {
   if (!isAuthenticated && !guestPages.includes(path)) {
     // url.pathname = "/login";
     // return NextResponse.redirect(url);
-    const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL
-    return NextResponse.redirect(`${serverUrl}/auth/getInjectCookie`);
+    url.pathname = "/api/getInjectCookie";
+    url.searchParams.set("redirectTo", path);
+    return NextResponse.redirect(url);
+    
   }
 
   return NextResponse.next();
