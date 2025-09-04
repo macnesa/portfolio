@@ -1,6 +1,7 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew&display=swap'); */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap');
 
 
 /* GOTHAM */
@@ -40,6 +41,75 @@
   font-family: 'Gotham';
   src: url('/assets/fonts/gotham/Gotham-Light.otf') format('opentype');
   font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* SNSF - Helvetica Neue Desk Interface Variants */
+@font-face {
+  font-family: 'SNSF';
+  src: url('/assets/fonts/snsf/_helveticaneuedeskinterface_bold.ttf') format('truetype');
+  font-weight: 700; /* Bold */
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SNSF';
+  src: url('/assets/fonts/snsf/_helveticaneuedeskinterface_regular.ttf') format('truetype');
+  font-weight: 400; /* Regular */
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SNSF';
+  src: url('/assets/fonts/snsf/_helveticaneuedeskinterface_thin.ttf') format('truetype');
+  font-weight: 300; /* Thin */
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SNSF';
+  src: url('/assets/fonts/snsf/_helveticaneuedeskinterface_ultralightp2.ttf') format('truetype');
+  font-weight: 200; /* Ultralight */
+  font-style: normal;
+  font-display: swap;
+}
+
+
+
+
+/* JetBrains Mono */
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/assets/fonts/jetBrains/JetBrainsMono-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/assets/fonts/jetBrains/JetBrainsMono-Italic.ttf") format("truetype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/assets/fonts/jetBrains/JetBrainsMono-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/assets/fonts/jetBrains/JetBrainsMono-Bold.ttf") format("truetype");
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }

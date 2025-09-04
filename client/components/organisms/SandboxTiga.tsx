@@ -118,7 +118,7 @@ export default function SandboxTiga() {
             initial={{ opacity: 0, filter: "blur(10px)", y: 20 }}
             animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
             transition={{ duration: 1, ease: "easeOut", delay: 0.4 }}
-            className="text-4xl sm:text-5xl md:text-8xl mb-6 font-base"
+            className="text-4xl sm:text-5xl md:text-8xl mb-6 font-base font-[SNSF]"
           >
             <Typewriter
               options={{
