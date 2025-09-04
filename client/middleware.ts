@@ -23,10 +23,10 @@ export function middleware(req: NextRequest) {
   if (!isAuthenticated && !guestPages.includes(path)) {
     // url.pathname = "/login";
     // return NextResponse.redirect(url);
-    url.pathname = "/api/getInjectCookie";
-    url.searchParams.set("redirectTo", path);
+    // url.pathname = "/api/getInjectCookie";
+    // url.searchParams.set("redirectTo", path);
+    const url = `${process.env.SERVER_URL}/auth/getInjectCookie`;
     return NextResponse.redirect(url);
-    
   }
 
   return NextResponse.next();

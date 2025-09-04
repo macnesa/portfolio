@@ -39,7 +39,6 @@ class AppServer {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cookieParser());
-    this.app.options("*", (req, res) => res.sendStatus(200))
   }
 
   private setupRoutes() {

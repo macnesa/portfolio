@@ -408,9 +408,8 @@ export default class authController extends BaseController {
     if(user?.id) {
       const token = generateJWT(user.id);
       this.setUserCookies(res, token); 
-      return this.sendSuccess(res, { token })
     }
-    this.sendSuccess(res, { token: null })
+    res.redirect(this.clientUrl)
   }
 }
 
