@@ -14,19 +14,19 @@ export function middleware(req: NextRequest) {
   console.log("galgalim", token);
   const isAuthenticated = Boolean(token);
   
-  const tokenFromQuery = url.searchParams.get("accessToken");
-  if (tokenFromQuery) {
-    const cleanUrl = new URL(path, req.url);
-    const res = NextResponse.redirect(cleanUrl);
-    res.cookies.set("accessToken", tokenFromQuery, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 24, // 1 hari
-    });
-    return res;
-  }
+  // const tokenFromQuery = url.searchParams.get("accessToken");
+  // if (tokenFromQuery) {
+  //   const cleanUrl = new URL(path, req.url);
+  //   const res = NextResponse.redirect(cleanUrl);
+  //   res.cookies.set("accessToken", tokenFromQuery, {
+  //     httpOnly: true,
+  //     secure: process.env.NODE_ENV === "production",
+  //     sameSite: "lax",
+  //     path: "/",
+  //     maxAge: 60 * 60 * 24, // 1 hari
+  //   });
+  //   return res;
+  // }
   
   // if (isAuthenticated && guestPages.includes(path)) {
   //   url.pathname = "/";

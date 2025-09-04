@@ -407,7 +407,15 @@ export default class authController extends BaseController {
     const user = await db.selectFrom('users').selectAll().executeTakeFirst(); 
     if(user?.id) {
       const token = generateJWT(user.id);
-      return res.redirect(`${this.clientUrl}?accessToken=${token}`);
+      res.cookie("accessToken", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        domain: ".onrender.com", // penting: ini biar cookie dipakai untuk semua subdomain render.com
+        path: "/",
+        maxAge: 1000 * 60 * 60 * 24, // 1 day
+      });
+      // return res.redirect(`${this.clientUrl}?accessToken=${token}`);
     }
     return res.redirect(this.clientUrl);
   }
