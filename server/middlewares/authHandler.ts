@@ -5,22 +5,36 @@ import jwt from "jsonwebtoken";
 import { db } from '../db';
 import { AuthService } from '../modules/auth/auth.service';
 import isEmpty from 'lodash/isEmpty';
+import { generateJWT, verifyJWT } from '../utils/auth';
 
 export function authHandler(required: boolean = true) {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const token = req.cookies.accessToken || req.headers['authorization']?.split(' ')[1];
+      let token = req.cookies.accessToken || req.headers['authorization']?.split(' ')[1];
       
-      // more check needed
-      if (required && !token) {
-        return sendResponse(res, false, 401, 'Access token required');
-      } if (!required || !token) {
+      console.log("holy name", token);
+      
+      
+      if (!required) {
         return next();
       }
       
-      const payload = jwt.verify(token, process.env.JWT_SECRET!) as { userId: number };
-      (req as any).user = { id: payload.userId };
+      if(!token) {
+        const user = await db.selectFrom("users").selectAll().executeTakeFirst();
+        if(user?.id) {
+          token =  generateJWT(user.id);
+          res.cookie("accessToken", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: (process.env.SAME_SITE as any) || "strict",
+            maxAge: 1000 * 60 * 60 * 24, // 1 day
+            path: "/",
+          });
+        }
+      } 
       
+      const payload =  verifyJWT(token);
+      (req as any).user = { id: payload.userId };
       
       const wakatimeAccount = await db.selectFrom('wakatime_accounts').selectAll().where('user_id', '=', payload.userId).executeTakeFirst();
       if(wakatimeAccount) {
@@ -50,39 +64,92 @@ export function authHandler(required: boolean = true) {
         (req as any).lastfm = { user: latfmAccount.id, session_key: latfmAccount.session_key };
       }
       
-      // // tcdbt
-      // const spotifyAccount = await db.selectFrom('spotify_accounts')
-      // .selectAll()
-      // .where('user_id', '=', payload.userId)
-      // .executeTakeFirst();
-      
-      // if(spotifyAccount) {
-      //   let {access_token, expires_in} = spotifyAccount;
-      //   const now = new Date();
-        
-      //   if (!expires_in || new Date(expires_in) <= now) {
-      //     try {
-      //       const refreshed = await AuthService.refreshSpotifyToken(spotifyAccount.refresh_token!); // #tcdbt
-            
-      //       await db.updateTable('spotify_accounts').set({
-      //         access_token: refreshed.access_token,
-      //         expires_in: new Date(Date.now() + refreshed.expires_in * 1000),
-      //         ...(refreshed.refresh_token ? { refresh_token: refreshed.refresh_token } : {}) // refresh_token bisa muncul at any time
-      //       }).where('user_id', '=', payload.userId).execute();
-            
-      //       (req as any).spotifyAccessToken = refreshed.access_token;
-      //     } catch (error) {
-      //       console.error('Failed to refresh Spotify token:', error);
-      //       return sendResponse(res, false, 401, 'Spotify access token expired and refresh failed');
-      //     }
-      //   } else {
-      //     (req as any).spotifyAccessToken = spotifyAccount.access_token;
-      //   }
-      // }
-      
       next();
     } catch (error) {
-      return sendResponse(res, false, 401, 'Invalid access token')
+      return sendResponse(res, false, 500, 'Internal Middleware Error')
     }
-  };
-} 
+  }
+}
+
+
+
+// export function authHandler(required: boolean = true) {
+//   return async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//       const token = req.cookies.accessToken || req.headers['authorization']?.split(' ')[1];
+      
+//       // more check needed
+//       if (required && !token) {
+//         return sendResponse(res, false, 401, 'Access token required');
+//       } if (!required || !token) {
+//         return next();
+//       }
+      
+//       const payload = jwt.verify(token, process.env.JWT_SECRET!) as { userId: number };
+//       (req as any).user = { id: payload.userId };
+      
+      
+//       const wakatimeAccount = await db.selectFrom('wakatime_accounts').selectAll().where('user_id', '=', payload.userId).executeTakeFirst();
+//       if(wakatimeAccount) {
+//         let { access_token, expires_in } = wakatimeAccount;
+//         const now = new Date();
+//         if (!expires_in || new Date(expires_in) <= now) {
+//           try {
+//             const refreshed = await AuthService.refreshWakatimeToken(wakatimeAccount.refresh_token!);
+//             await db.updateTable('wakatime_accounts').set({
+//               access_token: refreshed.access_token,
+//               expires_in: new Date(Date.now() + refreshed.expires_in * 1000),
+//               ...(refreshed.refresh_token ? { refresh_token: refreshed.refresh_token } : {}) // refresh_token bisa muncul at any time
+//             }).where('user_id', '=', payload.userId).execute();
+            
+//             (req as any).wakatimeAccessToken = refreshed.access_token;
+//           } catch (error) {
+//             console.error('Failed to refresh Wakatime token:', error);
+//             return sendResponse(res, false, 401, 'Wakatime access token expired and refresh failed');
+//           }
+//         } else {
+//           (req as any).wakatimeAccessToken = access_token;
+//         }
+//       }
+      
+//       const latfmAccount = await db.selectFrom('lastfm_accounts').selectAll().where('user_id', '=', payload.userId).executeTakeFirst();
+//       if(latfmAccount) {
+//         (req as any).lastfm = { user: latfmAccount.id, session_key: latfmAccount.session_key };
+//       }
+      
+//       // // tcdbt
+//       // const spotifyAccount = await db.selectFrom('spotify_accounts')
+//       // .selectAll()
+//       // .where('user_id', '=', payload.userId)
+//       // .executeTakeFirst();
+      
+//       // if(spotifyAccount) {
+//       //   let {access_token, expires_in} = spotifyAccount;
+//       //   const now = new Date();
+        
+//       //   if (!expires_in || new Date(expires_in) <= now) {
+//       //     try {
+//       //       const refreshed = await AuthService.refreshSpotifyToken(spotifyAccount.refresh_token!); // #tcdbt
+            
+//       //       await db.updateTable('spotify_accounts').set({
+//       //         access_token: refreshed.access_token,
+//       //         expires_in: new Date(Date.now() + refreshed.expires_in * 1000),
+//       //         ...(refreshed.refresh_token ? { refresh_token: refreshed.refresh_token } : {}) // refresh_token bisa muncul at any time
+//       //       }).where('user_id', '=', payload.userId).execute();
+            
+//       //       (req as any).spotifyAccessToken = refreshed.access_token;
+//       //     } catch (error) {
+//       //       console.error('Failed to refresh Spotify token:', error);
+//       //       return sendResponse(res, false, 401, 'Spotify access token expired and refresh failed');
+//       //     }
+//       //   } else {
+//       //     (req as any).spotifyAccessToken = spotifyAccount.access_token;
+//       //   }
+//       // }
+      
+//       next();
+//     } catch (error) {
+//       return sendResponse(res, false, 401, 'Invalid access token')
+//     }
+//   };
+// } 

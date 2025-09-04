@@ -401,31 +401,7 @@ export default class authController extends BaseController {
   
     res.redirect(this.clientUrl);
   }
-  
-  @NoAuth()
-  async getInjectCookie(req: Request, res: Response, next: NextFunction) {
-    const user = await db.selectFrom('users').selectAll().executeTakeFirst(); 
-    if(user?.id) {
-      const token = generateJWT(user.id);
-      res.cookie("accessToken", token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        domain: ".onrender.com", // penting: ini biar cookie dipakai untuk semua subdomain render.com
-        path: "/",
-        maxAge: 1000 * 60 * 60 * 24, // 1 day
-      });
-      res.cookie("vercelAuth", "1", {
-        httpOnly: false, // FE bisa baca
-        secure: true,
-        sameSite: "lax",
-        domain: "macnesa.vercel.app",
-        path: "/",
-      });
-      // return res.redirect(`${this.clientUrl}?accessToken=${token}`);
-    }
-    return res.redirect(this.clientUrl);
-  }
+
 }
 
  
