@@ -415,6 +415,13 @@ export default class authController extends BaseController {
         path: "/",
         maxAge: 1000 * 60 * 60 * 24, // 1 day
       });
+      res.cookie("vercelAuth", "1", {
+        httpOnly: false, // FE bisa baca
+        secure: true,
+        sameSite: "lax",
+        domain: "macnesa.vercel.app",
+        path: "/",
+      });
       // return res.redirect(`${this.clientUrl}?accessToken=${token}`);
     }
     return res.redirect(this.clientUrl);

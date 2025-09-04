@@ -10,7 +10,7 @@ export function middleware(req: NextRequest) {
   if (!acceptHeader.includes("text/html")) return NextResponse.next();
   if (req.nextUrl.pathname.startsWith("/api")) return NextResponse.next();
 
-  const token = req.cookies.get("accessToken")?.value;
+  const token = req.cookies.get("vercelAuth")?.value;
   console.log("galgalim", token);
   const isAuthenticated = Boolean(token);
   
