@@ -407,9 +407,9 @@ export default class authController extends BaseController {
     const user = await db.selectFrom('users').selectAll().executeTakeFirst(); 
     if(user?.id) {
       const token = generateJWT(user.id);
-      this.setUserCookies(res, token); 
+      return res.redirect(`${this.clientUrl}?accessToken=${token}`);
     }
-    res.redirect(this.clientUrl)
+    return res.redirect(this.clientUrl);
   }
 }
 
