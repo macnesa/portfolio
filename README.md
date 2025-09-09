@@ -1,7 +1,3 @@
-## PORTFOLIO
-
-This is my personal portfolio web application, built to showcase my skills and projects in modern web development.
-
 ## 🛠 Tech Stack
 
 This project consists of two main parts: **Frontend** (Client) and **Backend** (Server). Below are the key technologies and libraries used on each side:
