@@ -7,13 +7,7 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/app.js",
     "migrate": "ts-node scripts/dbMigrate.ts",
-    "downgrade-zod": "npm install zod@3.21.4",
-    "upgrade-zod": "npm install zod@latest",
-    "generate-types": "ts-node scripts/generateTypes.ts",
-    "generate-types-from-zod": "npm run downgrade-zod && npm run generate-types && npm run upgrade-zod"
-  },
-  "engines": {
-    "node": "18.x"
+    "generate-types": "ts-node scripts/generateTypes.ts"
   },
   "author": "",
   "license": "ISC",

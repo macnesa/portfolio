@@ -1,63 +1,86 @@
-##  🎵 Project Overview
+## PORTFOLIO
 
-**Resonate** is a music insight web application built in multiple phases to provide a rich and engaging user experience:
-
-1. **Phase 1:** Clone of Spotify’s core experience by combining features and design elements inspired by both Spotify and Apple Music.  
-2. **Phase 2:** Development of a scrobble server that collects and stores user listening data into a database, enabling deeper music insights and analytics.  
-3. **Phase 3:** Implementation of social features such as user following and real-time chat to foster community interaction around music.
-
-The frontend is built with Next.js and React, while the backend uses Express and TypeScript. The project emphasizes modularity, scalability, and modern best practices, including  custom auto-routing system and schema validation with Zod.
-
-Resonate aims to become more than just a music insights — it’s a platform for discovery, personalization, and social connection around music.
-
+This is my personal portfolio web application, built to showcase my skills and projects in modern web development.
 
 ## 🛠 Tech Stack
 
 This project consists of two main parts: **Frontend** (Client) and **Backend** (Server). Below are the key technologies and libraries used on each side:
 
+ ### 🌐 Frontend (Client)
 
----
-
-### 🌐 Frontend (Client)
-
-- **Framework**: [Next.js 15](https://nextjs.org/) - App Router (TypeScript)
-- **Library UI**: [React 19](https://reactjs.org/), [Tailwind CSS 4](https://tailwindcss.com/)
+- **Framework**: [Next.js 15](https://nextjs.org/) – App Router + TypeScript
+- **UI & Animation**: [React 19](https://reactjs.org/), [Framer Motion](https://www.framer.com/motion/), [Swiper](https://swiperjs.com/)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/) + [tailwind-merge](https://github.com/dcastil/tailwind-merge)
 - **State Management**: [Zustand](https://zustand-demo.pmnd.rs/)
 - **HTTP Client**: [Axios](https://axios-http.com/)
 - **Utilities**:
   - [Lodash](https://lodash.com/) – Utility functions
-  - [Color Thief](https://lokeshdhakar.com/projects/color-thief/) – Dominant color extraction
-  - [tailwind-merge](https://github.com/dcastil/tailwind-merge) – Class merging
+  - [Color Thief](https://lokeshdhakar.com/projects/color-thief/) – Extract dominant colors
+  - [React Typing Effect](https://github.com/andreopane/react-typing-effect) – Typewriter animations
 
 ---
 
 ### 🧩 Backend (Server)
 
-- **Runtime**: [Node.js](https://nodejs.org/) with [Express 5](https://expressjs.com/)
-- **Type Checking**: [TypeScript 5](https://www.typescriptlang.org/)
-- **Validation**: [Zod](https://zod.dev/) + `zod-to-ts` for schema-based typing
+- **Runtime & Framework**: [Node.js](https://nodejs.org/) + [Express 5](https://expressjs.com/) (TypeScript 5)
+- **Database**: PostgreSQL via [Kysely](https://kysely.dev/)
+- **Validation & Typing**: [Zod](https://zod.dev/) + [zod-to-ts](https://github.com/colinhacks/zod-to-ts)
+- **Authentication**: JWT + [bcryptjs](https://www.npmjs.com/package/bcryptjs)
+- **Utilities**:
+  - [Axios](https://axios-http.com/) – API requests
+  - [Lodash](https://lodash.com/) – Utility functions
+  - [Umzug](https://github.com/sequelize/umzug) – Database migrations
+  - [Reflect Metadata](https://www.npmjs.com/package/reflect-metadata) – Decorators support
 - **Custom Features**:
-  - **Auto Route Generator**  
-    Automatically maps controller methods to Express routes based on naming conventions. No need for manual route definitions. Supports dynamic URL params and built-in auth handling via decorators.
-  - **@NoAuth Decorator**  
-    Allows specific controller methods to bypass authentication by applying the `@NoAuth()` decorator. Useful for public endpoints like login or health checks.
+  - **Auto Route Generator** – Maps controller methods to routes automatically with dynamic URL params support.
+  - **@NoAuth Decorator** – Bypass authentication for specific controller methods, useful for public endpoints like login or health checks.
 
 ---
 
-### 📦 Shared Tools
+### Prerequisites
 
-- **Monorepo Setup** with separate `client/` and `server/` directories
-- **Type Safety** across client and server using generated types from Zod schemas
-- **Package Managers**: NPM (`package-lock.json` in both root and subdirectories)
-
----
+- Node.js 18+ (LTS recommended)
+- npm 8+
+- PostgreSQL (latest stable version)
 
 
-### 🚀 Development Tools
+### Installation
+```bash
+git clone <URL_REPO>
+```
+**server**
+```bash
+cd server
+npm install
+```
+```sql
+-- run on your sql editor 
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-- `ts-node`, `ts-node-dev` for local backend development
-- Custom scripts (e.g., `generateTypes.ts`) for automating type generation
-- ESLint configuration shared via `eslint.config.mjs`
+CREATE TABLE migrations (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL UNIQUE,
+  run_on TIMESTAMP NOT NULL DEFAULT now()
+);
+```
+```sql
+-- create .env file and fill up env values based on .env.example
+```
+```bash
+npm run migrate
+npm run dev
+```
+**client**
+```bash
+cd client
+npm install
+```
+```sql
+-- create .env.local file and fill up env values based on .env.example
+```
+```bash
+npm run dev
+```
 
 ---
 
@@ -70,6 +93,7 @@ This project consists of two main parts: **Frontend** (Client) and **Backend** (
 │   ├── components/             # UI components (atoms, molecules, organisms)
 │   ├── constants/              # Application-wide constants
 │   ├── containers/             # Higher-order components or feature containers
+│   ├── hooks/                  # Custom React hooks
 │   ├── lib/                    # API helpers and utilities
 │   ├── public/                 # Static assets (fonts, images, svgs)
 │   ├── store/                  # Zustand-based global state
@@ -77,20 +101,27 @@ This project consists of two main parts: **Frontend** (Client) and **Backend** (
 │   ├── types/                  # Global TypeScript type declarations
 │   ├── middleware.ts           # Next.js middleware for auth/redirect
 │   ├── next.config.ts          # Next.js configuration
-│   └── ...
+│   ├── postcss.config.mjs      # PostCSS configuration
+│   ├── tsconfig.json           # TypeScript configuration
+│   └── eslint.config.mjs       # ESLint configuration
 │
 ├── server/                     # Backend application (Express)
 │   ├── app.ts                  # Entry point for Express server
 │   ├── constants/              # Error codes and URL mappings
-│   ├── core/                   # Core files (e.g. dependency injection)
+│   ├── core/                   # Core files (e.g. base controller, DI)
 │   ├── decorators/             # Custom decorators (e.g. @NoAuth)
 │   ├── middlewares/            # Express middlewares (auth, error handling)
-│   ├── modules/                # API modules grouped by domain (user, auth, etc.)
-│   ├── routes/                 # Auto route generator
+│   ├── modules/                # API modules grouped by domain (user, auth)
+│   ├── routes/                 # Route definitions
 │   ├── schemas/                # Zod schemas for validation & types
-│   ├── scripts/                # Utility scripts (e.g. type generators)
+│   ├── migrations/             # Database migration scripts
+│   ├── scripts/                # Utility scripts (e.g. db migrate, generate types)
+│   ├── sql/                    # Raw SQL files (e.g. create migrations table)
 │   ├── utils/                  # Reusable utility functions
-│   └── ...
+│   └── tsconfig.json           # TypeScript configuration
 │
 ├── package.json                # Root-level dependency declarations
+├── package-lock.json           # Lockfile for package versions
+└── README.md                   # Project overview
+
 ```
